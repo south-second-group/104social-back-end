@@ -5,7 +5,9 @@
     "description": "A social networking website for connecting people.",
     "version": "1.0.0"
   },
-  "host": "one04social-back-end.onrender.com",
+  "host": [
+    "localhost:3000"
+  ],
   "basePath": "/",
   "schemes": [
     "http",
@@ -248,7 +250,7 @@
     }
   },
   "definitions": {
-    "User": {
+    "testUser": {
       "type": "object",
       "properties": {
         "type": {

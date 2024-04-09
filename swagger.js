@@ -1,13 +1,13 @@
 const swaggerAutogen = require('swagger-autogen')();
-const User = require('./models/testUsersModel');
+const testUser = require('./models/testUsersModel');
 
 const doc = {
   info: {
     title: '104social',
     description: 'A social networking website for connecting people.',
   },
-  host: 'one04social-back-end.onrender.com', // 正式機 one04social-back-end.onrender.com  / 本地 localhost:3000
-  schemes: ['http', 'https'],
+  host: ['localhost:3000'], // 正式機 one04social-back-end.onrender.com  / 本地 localhost:3000
+  schemes: ['http', 'https'], // 正式機 https / 本地 http
   securityDefinitions: {
     Bearer: {
       type: 'apiKey',
@@ -18,17 +18,17 @@ const doc = {
     },
   },
   definitions: {
-    User: {
+    testUser: {
       type: 'object',
       properties: {},
     },
   },
 };
 
-// User schema fields
-Object.keys(User.schema.paths).forEach((field) => {
-  const type = User.schema.paths[field].instance.toLowerCase();
-  doc.definitions.User.properties[field] = { type };
+// testUser schema
+Object.keys(testUser.schema.paths).forEach((field) => {
+  const type = testUser.schema.paths[field].instance.toLowerCase();
+  doc.definitions.testUser.properties[field] = { type };
 });
 
 const outputFile = './swagger-output.json';
