@@ -23,7 +23,7 @@
     "/api/test/v1/user/register": {
       "post": {
         "tags": [
-          "Users"
+          "test Users"
         ],
         "description": "註冊",
         "parameters": [
@@ -42,6 +42,14 @@
                 "email": {
                   "type": "string",
                   "example": "william01@gmail.com"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "secret"
+                },
+                "photo": {
+                  "type": "string",
+                  "example": "xxx.jpg"
                 },
                 "password": {
                   "type": "string",
@@ -85,7 +93,7 @@
     "/api/test/v1/user/login": {
       "post": {
         "tags": [
-          "Users"
+          "test Users"
         ],
         "description": "登入",
         "parameters": [
@@ -165,7 +173,7 @@
     "/api/test/v1/user/profile": {
       "get": {
         "tags": [
-          "Users"
+          "test Users"
         ],
         "description": "取得會員資料",
         "parameters": [
@@ -230,7 +238,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
       }
     }
   },
@@ -312,10 +325,5 @@
         }
       }
     }
-  },
-  "security": [
-    {
-      "Bearer": []
-    }
-  ]
+  }
 }

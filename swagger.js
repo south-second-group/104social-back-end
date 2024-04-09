@@ -17,11 +17,6 @@ const doc = {
         'Enter "Bearer+space+{token}"。Example: "Bearer eyXXX.XXX.XXX"',
     },
   },
-  security: [
-    {
-      Bearer: [],
-    },
-  ],
   definitions: {
     User: {
       type: 'object',

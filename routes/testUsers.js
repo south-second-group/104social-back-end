@@ -8,7 +8,7 @@ const router = express.Router();
 router.post(
   '/user/register',
   /**
-     * #swagger.tags = ['Users']
+     * #swagger.tags = ['test Users']
      * #swagger.description = '註冊'
      * #swagger.parameters['body'] = {
             in: 'body',
@@ -18,9 +18,11 @@ router.post(
             schema: {
                 "name": "william01",
                 "email": "william01@gmail.com",
+                "gender": "secret",
+                "photo":"xxx.jpg",
                 "password": "a11111111",
                 "confirmPassword": "a11111111"
-            }
+                }
         }
      * #swagger.responses[200] = {
             description: '註冊資訊',
@@ -38,7 +40,7 @@ router.post(
 router.post(
   '/user/login',
   /**
-     * #swagger.tags = ['Users']
+     * #swagger.tags = ['test Users']
      * #swagger.description = '登入'
      * #swagger.parameters['body'] = {
             in: 'body',
@@ -74,8 +76,11 @@ router.get(
   '/user/profile',
   checkAuth,
   /**
-     * #swagger.tags = ['Users']
+     * #swagger.tags = ['test Users']
      * #swagger.description = '取得會員資料'
+     * #swagger.security = [{
+            Bearer: []
+        }]
 
      * #swagger.responses[200] = {
             description: '個人資訊',

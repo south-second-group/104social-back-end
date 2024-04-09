@@ -9,7 +9,9 @@
 
 > 此專案是一份 README 的撰寫範本，主要是方便所有人可以快速撰寫 README，讓大家可以更有方向的去寫出 README。
 
-- [線上觀看連結](https://israynotarray.com/)
+<!-- - [線上觀看連結](https://israynotarray.com/) -->
+
+- [swagger 文件](https://one04social-back-end.onrender.com/api-doc/#/)
 
 ## 功能
 
@@ -42,13 +44,13 @@ Node.js 版本建議為：`16.0` 以上...
 ### 取得專案
 
 ```bash
-git clone git@github.com:hsiangfeng/README-Example-Template.git
+git clone https://github.com/south-second-group/104social-back-end.git
 ```
 
 ### 移動到專案內
 
 ```bash
-cd README-Example-Template
+cd 104social-back-end
 ```
 
 ### 安裝套件
@@ -66,7 +68,7 @@ npm ci
 ### 運行專案
 
 ```bash
-npm run start
+npm run start:dev
 ```
 
 ### 開啟專案
