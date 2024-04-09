@@ -1,17 +1,17 @@
-const handleErrorAsync = require('../service/handleErrorAsync'); 
-const { successHandler } = require('../service/handler'); 
-const appError = require('../service/appError'); 
-const bcrypt = require('bcryptjs'); 
-const validator = require('validator'); 
+const handleErrorAsync = require('../service/handleErrorAsync');
+const { successHandler } = require('../service/handler');
+const appError = require('../service/appError');
+const bcrypt = require('bcryptjs');
+const validator = require('validator');
 const { generateSendJWT } = require('../service/auth');
 const dotenv = require('dotenv');
 dotenv.config({ path: './config.env' });
 
-const User = require('../models/usersModel');
+const User = require('../models/testUsersModel');
 
 const users = {
   register: handleErrorAsync(async (req, res, next) => {
-    let { name, email, password, confirmPassword } = req.body;
+    let { name, email, photo, gender, password, confirmPassword } = req.body;
 
     if (!name || !email || !password || !confirmPassword) {
       return appError('欄位未填寫完整', 400, next);
@@ -54,7 +54,7 @@ const users = {
 
     // 建立新使用者
     password = await bcrypt.hash(password, 11);
-    const data = { name, email, password, photo: '', gender: '' };
+    const data = { name, email, password, photo, gender };
     await User.create(data);
 
     successHandler(res, '註冊成功，請重新登入', {}, 201);

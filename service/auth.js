@@ -3,7 +3,7 @@ const handleErrorAsync = require('../service/handleErrorAsync');
 const { successHandler } = require('../service/handler');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/usersModel');
+const User = require('../models/testUsersModel');
 
 // 檢查 token 是否存在
 const checkAuth = handleErrorAsync(async (req, res, next) => {

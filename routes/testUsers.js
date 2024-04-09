@@ -1,5 +1,5 @@
 const express = require('express');
-const users = require('../controllers/users');
+const users = require('../controllers/testUsers');
 const { checkAuth } = require('../service/auth');
 
 const router = express.Router();
@@ -75,7 +75,7 @@ router.get(
   checkAuth,
   /**
      * #swagger.tags = ['Users']
-     * #swagger.description = '取得自己的資訊'
+     * #swagger.description = '取得會員資料'
 
      * #swagger.responses[200] = {
             description: '個人資訊',

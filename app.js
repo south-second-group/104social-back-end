@@ -8,7 +8,7 @@ const swaggerUI = require('swagger-ui-express');
 
 const swaggerFile = require('./swagger-output.json');
 const { errorHandler } = require('./service/handler');
-const usersRouter = require('./routes/users');
+const testUsersRouter = require('./routes/testUsers');
 
 const app = express();
 dotenv.config({ path: './.env' });
@@ -25,7 +25,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 路由
-app.use('/api/v1', usersRouter);
+app.use('/api/test/v1', testUsersRouter);
+
 app.use('/api-doc', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 
 // 404 錯誤

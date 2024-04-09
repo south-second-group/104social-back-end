@@ -5,7 +5,7 @@
     "description": "A social networking website for connecting people.",
     "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "one04social-back-end.onrender.com",
   "basePath": "/",
   "schemes": [
     "http",
@@ -20,7 +20,7 @@
     }
   },
   "paths": {
-    "/api/v1/user/register": {
+    "/api/test/v1/user/register": {
       "post": {
         "tags": [
           "Users"
@@ -82,7 +82,7 @@
         }
       }
     },
-    "/api/v1/user/login": {
+    "/api/test/v1/user/login": {
       "post": {
         "tags": [
           "Users"
@@ -162,12 +162,12 @@
         }
       }
     },
-    "/api/v1/user/profile": {
+    "/api/test/v1/user/profile": {
       "get": {
         "tags": [
           "Users"
         ],
-        "description": "取得自己的資訊",
+        "description": "取得會員資料",
         "parameters": [
           {
             "name": "authorization",
@@ -244,7 +244,71 @@
         },
         "properties": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "name": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "email": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "photo": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "gender": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "password": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "createdAt": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "date"
+                }
+              }
+            },
+            "_id": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "objectid"
+                }
+              }
+            }
+          }
         }
       }
     }
