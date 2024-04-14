@@ -72,7 +72,7 @@ testUsers_1.default.login);
 router.get('/user/profile', auth_1.checkAuth, 
 /**
    * #swagger.tags = ['test Users']
-   * #swagger.description = '取得會員資料'
+   * #swagger.description = '取得會員資料 （使用上方Authorization統一解鎖）'
    * #swagger.security = [{
           Bearer: []
       }]

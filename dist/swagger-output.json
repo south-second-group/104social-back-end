@@ -6,11 +6,10 @@
         "version": "1.0.0"
     },
     "host": [
-        "localhost:3000"
+        "one04social-back-end.onrender.com"
     ],
     "basePath": "/",
     "schemes": [
-        "http",
         "https"
     ],
     "securityDefinitions": {
@@ -177,7 +176,7 @@
                 "tags": [
                     "test Users"
                 ],
-                "description": "取得會員資料",
+                "description": "取得會員資料 （使用上方Authorization統一解鎖）",
                 "parameters": [
                     {
                         "name": "authorization",

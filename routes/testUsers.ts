@@ -77,7 +77,7 @@ router.get(
   checkAuth,
   /**
      * #swagger.tags = ['test Users']
-     * #swagger.description = '取得會員資料'
+     * #swagger.description = '取得會員資料 （使用上方Authorization統一解鎖）'
      * #swagger.security = [{
             Bearer: []
         }]
