@@ -4,22 +4,23 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug')('104social:server');
-var http = require('http');
+import app from '../app';
+import debugModule from 'debug';
+const debug = debugModule('104social:server');
+import http from 'http';
 
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3005');
+const port = normalizePort(process.env.PORT || '3005');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -33,19 +34,16 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
-  var port = parseInt(val, 10);
-
+function normalizePort(val: string): number | string | boolean {
+  let port = parseInt(val, 10);
   if (isNaN(port)) {
     // named pipe
     return val;
   }
-
   if (port >= 0) {
     // port number
     return port;
   }
-
   return false;
 }
 
@@ -53,21 +51,19 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error: NodeJS.ErrnoException): void {
   if (error.syscall !== 'listen') {
     throw error;
   }
-
-  var bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
-
+  let bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      console.error(`${bind} requires elevated privileges`);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      console.error(`${bind} is already in use`);
       process.exit(1);
       break;
     default:
@@ -79,12 +75,14 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
-  var addr = server.address();
-  var bind =
-    typeof addr === 'string'
-      ? 'pipe ' + addr
-      : 'http://localhost:'+ addr.port;
+function onListening(): void {
+  let addr = server.address();
+let bind =
+  typeof addr === 'string'
+    ? 'pipe ' + addr
+    : addr === null
+    ? 'null'
+    : 'http://localhost:' + addr.port;
   debug('Listening on ' + bind);
   console.log('---------------------------------------');
   console.log('| Listening on  ' + bind + ' |');

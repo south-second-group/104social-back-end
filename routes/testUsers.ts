@@ -1,6 +1,6 @@
-const express = require('express');
-const users = require('../controllers/testUsers');
-const { checkAuth } = require('../service/auth');
+import express from 'express';
+import users from '../controllers/testUsers';
+import { checkAuth } from '../service/auth';
 
 const router = express.Router();
 
@@ -102,4 +102,4 @@ router.get(
   users.getOwnProfile
 );
 
-module.exports = router;
+export default router;

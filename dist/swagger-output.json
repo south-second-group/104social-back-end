@@ -1,0 +1,331 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "104social",
+        "description": "A social networking website for connecting people.",
+        "version": "1.0.0"
+    },
+    "host": [
+        "localhost:3000"
+    ],
+    "basePath": "/",
+    "schemes": [
+        "http",
+        "https"
+    ],
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+            "description": "Enter \"Bearer+space+{token}\"。Example: \"Bearer eyXXX.XXX.XXX\""
+        }
+    },
+    "paths": {
+        "/api/test/v1/user/register": {
+            "post": {
+                "tags": [
+                    "test Users"
+                ],
+                "description": "註冊",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "description": "資料格式",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "example": "william01"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "example": "william01@gmail.com"
+                                },
+                                "gender": {
+                                    "type": "string",
+                                    "example": "secret"
+                                },
+                                "photo": {
+                                    "type": "string",
+                                    "example": "xxx.jpg"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "a11111111"
+                                },
+                                "confirmPassword": {
+                                    "type": "string",
+                                    "example": "a11111111"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "註冊資訊",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "success"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "註冊成功，請重新登入"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/test/v1/user/login": {
+            "post": {
+                "tags": [
+                    "test Users"
+                ],
+                "description": "登入",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "description": "資料格式",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "example": "william01@gmail.com"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "example": "a11111111"
+                                }
+                            },
+                            "required": [
+                                "email",
+                                "password"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登入資訊",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "success"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "登入成功"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "token": {
+                                            "type": "string",
+                                            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MTJhNjU2ZjA2ZTdiNjgxZTk5OTUyYiIsImlhdCI6MTcxMjQ5OTA2Nn0.rK_A2oK_1SQqYFPqghvhJhvfAg_5UXsazV0s0mvYQkw"
+                                        },
+                                        "profile": {
+                                            "type": "object",
+                                            "properties": {
+                                                "_id": {
+                                                    "type": "string",
+                                                    "example": "6612a656f06e7b681e99952b"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "william01"
+                                                },
+                                                "photo": {
+                                                    "type": "string",
+                                                    "example": ""
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/test/v1/user/profile": {
+            "get": {
+                "tags": [
+                    "test Users"
+                ],
+                "description": "取得會員資料",
+                "parameters": [
+                    {
+                        "name": "authorization",
+                        "in": "header",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "個人資訊",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "success"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "取得成功"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {
+                                        "_id": {
+                                            "type": "string",
+                                            "example": "6612a656f06e7b681e99952b"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "william01"
+                                        },
+                                        "photo": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "gender": {
+                                            "type": "string",
+                                            "example": ""
+                                        },
+                                        "followers": {
+                                            "type": "array",
+                                            "example": [],
+                                            "items": {}
+                                        },
+                                        "following": {
+                                            "type": "array",
+                                            "example": [],
+                                            "items": {}
+                                        },
+                                        "createdAt": {
+                                            "type": "string",
+                                            "example": "2024-04-07T13:57:42.923Z"
+                                        }
+                                    }
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "definitions": {
+        "testUser": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "example": "object"
+                },
+                "properties": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "email": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "photo": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "gender": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "password": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "createdAt": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "date"
+                                }
+                            }
+                        },
+                        "_id": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "objectid"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
