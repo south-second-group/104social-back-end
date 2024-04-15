@@ -9,7 +9,7 @@ import swaggerUI from "swagger-ui-express"
 import swaggerFile from "./swagger-output.json"
 import { errorHandler } from "./service/handler"
 import testUsersRouter from "./routes/testUsers"
-import { type Error } from "./types/error"
+import { type ExtendedError } from "./types/ExtendedError"
 
 const app = express()
 dotenv.config({ path: "./.env" })
@@ -26,7 +26,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 
 // 路由
-app.use("", testUsersRouter)
+app.use("", testUsersRouter) // api/test/v1/user
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 
@@ -36,7 +36,7 @@ app.use((req: Request, res: Response, _next: NextFunction) => {
 })
 
 // production 環境錯誤
-const resErrorProd = (error: Error, res: Response): void => {
+const resErrorProd = (error: ExtendedError, res: Response): void => {
   //* eslint-disable no-console */
   console.error(error)
   //* eslint-enable no-console */
@@ -48,9 +48,10 @@ const resErrorProd = (error: Error, res: Response): void => {
 }
 
 //  develop 環境錯誤
-/* eslint-disable no-console */
-function resErrorDev (res: Response, err: Error): void {
+function resErrorDev (res: Response, err: ExtendedError): void {
+  /* eslint-disable no-console */
   console.log(err)
+  /* eslint-enable no-console */
   const statusCode = err.statusCode ?? 500
   const statusText = err ?? "開發環境錯誤"
 
@@ -60,10 +61,9 @@ function resErrorDev (res: Response, err: Error): void {
     stack: err.stack
   })
 }
-/* eslint-enable no-console */
 
 // 自訂錯誤處理，依照環境不同，回傳不同錯誤訊息
-app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
+app.use((error: ExtendedError, req: Request, res: Response, _next: NextFunction) => {
   // dev
   if (process.env.NODE_ENV === "develop") {
     resErrorDev(res, error); return

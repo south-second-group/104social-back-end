@@ -1,4 +1,4 @@
-export interface Error {
+export interface ExtendedError {
   statusCode?: number
   statusText?: string
   stack?: string

@@ -8,9 +8,9 @@ const DB = process.env.DATABASE?.replace(
   process.env.DATABASE_PASSWORD ?? ""
 )
 
-/* eslint-disable no-console */
 mongoose
   .connect(DB + "testDB", {})
+/* eslint-disable no-console */
   .then(() => { console.log("連線資料庫成功") })
   .catch((error) => { console.error("連線資料庫失敗:", error) })
 /* eslint-enable no-console */
