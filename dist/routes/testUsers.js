@@ -8,7 +8,7 @@ const testUsers_1 = __importDefault(require("../controllers/testUsers"));
 const auth_1 = require("../service/auth");
 const router = express_1.default.Router();
 // 註冊
-router.post('/user/register', 
+router.post("/api/test/v1/user/register", 
 /**
    * #swagger.tags = ['test Users']
    * #swagger.description = '註冊'
@@ -37,7 +37,7 @@ router.post('/user/register',
    */
 testUsers_1.default.register);
 // 登入
-router.post('/user/login', 
+router.post("/api/test/v1/user/login", 
 /**
    * #swagger.tags = ['test Users']
    * #swagger.description = '登入'
@@ -69,7 +69,7 @@ router.post('/user/login',
    */
 testUsers_1.default.login);
 // 取得會員資料
-router.get('/user/profile', auth_1.checkAuth, 
+router.get("/api/test/v1/user/profile", auth_1.checkAuth, 
 /**
    * #swagger.tags = ['test Users']
    * #swagger.description = '取得會員資料 （使用上方Authorization統一解鎖）'
@@ -95,4 +95,9 @@ router.get('/user/profile', auth_1.checkAuth,
       }
    */
 testUsers_1.default.getOwnProfile);
+const app = (0, express_1.default)();
+app.use(router);
+//* eslint-disable no-console */
+// console.log(router)
+//* eslint-enable no-console */
 exports.default = router;

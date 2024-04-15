@@ -1,0 +1,22 @@
+{
+    "env": {
+        "browser": true, // 環境設定為瀏覽器
+        "es2021": true // 使用 2021 年的 ECMAScript 特性
+    },
+    "extends": "standard-with-typescript", // 繼承 standard-with-typescript 的規則集
+    "parserOptions": {
+        "ecmaVersion": "latest", // 使用最新的 ECMAScript 版本
+        "sourceType": "module" // 模塊類型是 ES6 模塊
+    },
+    "rules": {
+        "@typescript-eslint/no-explicit-any": "error", // 禁止使用 any 類型
+        "@typescript-eslint/explicit-module-boundary-types": "warn", // 要求導出的函數和類的方法有顯示的返回類型
+        "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }], // 禁止出現未使用過的變量，但允許變量名稱以 `_` 開頭的變量
+        "no-console": ["warn", { "allow": ["warn", "error"] }], // 生產環境中建議禁用 console，除了 console.warn 和 console.error
+        "eqeqeq": ["error", "always"], // 要求使用嚴格等於 === 或嚴格不等於 !==
+        "no-implicit-coercion": "error", // 禁止使用短語法進行類型轉換
+        "prefer-const": ["error", { "destructuring": "all" }], // 如果變量未重新賦值，則建議使用 const 聲明
+        "@typescript-eslint/no-non-null-assertion": "error", // 禁止使用非空斷言（!）
+        "@typescript-eslint/quotes": ["error", "double", { "allowTemplateLiterals": true }] // 強制使用雙引號，但允許模板字面值
+    }
+}
