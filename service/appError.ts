@@ -1,9 +1,5 @@
 import { type NextFunction } from "express"
-
-interface ExtendedError extends Error {
-  statusCode?: number
-  isOperational?: boolean
-}
+import { type ExtendedError } from "../types/ExtendedError"
 
 const appError = (
   message: string,

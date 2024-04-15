@@ -1,8 +1,18 @@
+// import { type Request, type Response, type NextFunction } from "express"
 import express from "express"
 import users from "../controllers/testUsers"
 import { checkAuth } from "../service/auth"
 
 const router = express.Router()
+
+// router.use((req: Request, res: Response, next: NextFunction): void => {
+//   const { url, method } = req
+//   //* eslint-disable no-console */
+//   console.info(`url: ${url} method: ${method} `) // 常用的參數：req.body, req.params, req.query, req.headers, req.cookies, req.signedCookies
+//   console.log(res) // res 常用參數：
+//   //* eslint-enable no-console */
+//   next()
+// })
 
 // 註冊
 router.post(

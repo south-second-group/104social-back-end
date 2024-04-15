@@ -4,16 +4,9 @@ import appError from "../service/appError"
 import handleErrorAsync from "../service/handleErrorAsync"
 import { successHandler } from "../service/handler"
 import jwt, { type Secret } from "jsonwebtoken"
-import { Error } from "../types/error"
+import { type UserInterface } from "../types/user"
 
 import User from "../models/testUsersModel"
-
-interface UserInterface {
-  _id: string
-  name: string
-  photo: string
-  password?: string
-}
 
 declare module "express-serve-static-core" {
   interface Request {
