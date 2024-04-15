@@ -1,12 +1,12 @@
-import express from 'express';
-import users from '../controllers/testUsers';
-import { checkAuth } from '../service/auth';
+import express from "express"
+import users from "../controllers/testUsers"
+import { checkAuth } from "../service/auth"
 
-const router = express.Router();
+const router = express.Router()
 
 // 註冊
 router.post(
-  '/user/register',
+  "/api/test/v1/user/register",
   /**
      * #swagger.tags = ['test Users']
      * #swagger.description = '註冊'
@@ -34,11 +34,11 @@ router.post(
         }
      */
   users.register
-);
+)
 
 // 登入
 router.post(
-  '/user/login',
+  "/api/test/v1/user/login",
   /**
      * #swagger.tags = ['test Users']
      * #swagger.description = '登入'
@@ -69,11 +69,11 @@ router.post(
         }
      */
   users.login
-);
+)
 
 // 取得會員資料
 router.get(
-  '/user/profile',
+  "/api/test/v1/user/profile",
   checkAuth,
   /**
      * #swagger.tags = ['test Users']
@@ -100,6 +100,13 @@ router.get(
         }
      */
   users.getOwnProfile
-);
+)
 
-export default router;
+const app = express()
+app.use(router)
+
+//* eslint-disable no-console */
+// console.log(router)
+//* eslint-enable no-console */
+
+export default router

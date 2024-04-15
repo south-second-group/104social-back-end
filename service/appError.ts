@@ -1,8 +1,8 @@
-import { NextFunction } from 'express';
+import { type NextFunction } from "express"
 
 interface ExtendedError extends Error {
-  statusCode?: number;
-  isOperational?: boolean;
+  statusCode?: number
+  isOperational?: boolean
 }
 
 const appError = (
@@ -10,10 +10,10 @@ const appError = (
   statusCode: number,
   next: NextFunction
 ): void => {
-  const error: ExtendedError = new Error(message);
-  error.statusCode = statusCode;
-  error.isOperational = true;
-  next(error);
-};
+  const error: ExtendedError = new Error(message)
+  error.statusCode = statusCode
+  error.isOperational = true
+  next(error)
+}
 
-export default appError;
+export default appError
