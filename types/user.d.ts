@@ -3,4 +3,5 @@ export interface UserInterface {
   name: string
   photo: string
   password?: string
+  gender?: string
 }

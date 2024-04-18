@@ -39,6 +39,7 @@ export const checkAuth = handleErrorAsync(
       req.user = {
         _id: currentUser._id.toString(),
         name: currentUser.name,
+        gender: currentUser.gender,
         photo: currentUser.photo ?? "",
         password: currentUser.password
       }
@@ -63,6 +64,7 @@ export const generateSendJWT = (res: Response, message: string, user: UserInterf
     profile: {
       _id: user._id,
       name: user.name,
+      gender: user.gender,
       photo: user.photo
     }
   }

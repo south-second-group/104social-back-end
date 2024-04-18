@@ -13,6 +13,7 @@ const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_output_json_1 = __importDefault(require("./swagger-output.json"));
 const handler_1 = require("./service/handler");
 const testUsers_1 = __importDefault(require("./routes/testUsers"));
+const upload_1 = __importDefault(require("./routes/upload"));
 const app = (0, express_1.default)();
 dotenv_1.default.config({ path: "./.env" });
 // 連線 mongodb
@@ -25,7 +26,8 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 // 路由
-app.use("/api/test/v1/user", testUsers_1.default); // api/test/v1/user
+app.use("/api/test/v1/user", testUsers_1.default);
+app.use("/api/test/v1/user/upload", upload_1.default);
 app.use("/api-doc", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_output_json_1.default));
 // 404 錯誤
 app.use((req, res, _next) => {
@@ -35,7 +37,7 @@ app.use((req, res, _next) => {
 const resErrorProd = (error, res) => {
     var _a, _b;
     //* eslint-disable no-console */
-    console.error(error);
+    console.error("環境錯誤", error);
     //* eslint-enable no-console */
     if ((_a = error.isOperational) !== null && _a !== void 0 ? _a : false) {
         (0, handler_1.errorHandler)(res, (_b = error.message) !== null && _b !== void 0 ? _b : "", error.statusCode);
@@ -48,7 +50,7 @@ const resErrorProd = (error, res) => {
 function resErrorDev(res, err) {
     var _a;
     /* eslint-disable no-console */
-    console.log(err);
+    console.log("開發環境錯誤", err);
     /* eslint-enable no-console */
     const statusCode = (_a = err.statusCode) !== null && _a !== void 0 ? _a : 500;
     const statusText = err !== null && err !== void 0 ? err : "開發環境錯誤";

@@ -8,8 +8,9 @@ import swaggerUI from "swagger-ui-express"
 
 import swaggerFile from "./swagger-output.json"
 import { errorHandler } from "./service/handler"
-import testUsersRouter from "./routes/testUsers"
 import { type ExtendedError } from "./types/ExtendedError"
+import testUsersRouter from "./routes/testUsers"
+import uploadRouter from "./routes/upload"
 
 const app = express()
 dotenv.config({ path: "./.env" })
@@ -26,7 +27,8 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 
 // 路由
-app.use("/api/test/v1/user", testUsersRouter) // api/test/v1/user
+app.use("/api/test/v1/user", testUsersRouter)
+app.use("/api/test/v1/user/upload", uploadRouter)
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 
@@ -38,7 +40,7 @@ app.use((req: Request, res: Response, _next: NextFunction) => {
 // production 環境錯誤
 const resErrorProd = (error: ExtendedError, res: Response): void => {
   //* eslint-disable no-console */
-  console.error(error)
+  console.error("環境錯誤", error)
   //* eslint-enable no-console */
   if (error.isOperational ?? false) {
     errorHandler(res, error.message ?? "", error.statusCode)
@@ -50,7 +52,7 @@ const resErrorProd = (error: ExtendedError, res: Response): void => {
 //  develop 環境錯誤
 function resErrorDev (res: Response, err: ExtendedError): void {
   /* eslint-disable no-console */
-  console.log(err)
+  console.log("開發環境錯誤", err)
   /* eslint-enable no-console */
   const statusCode = err.statusCode ?? 500
   const statusText = err ?? "開發環境錯誤"

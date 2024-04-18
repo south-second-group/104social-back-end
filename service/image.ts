@@ -1,9 +1,7 @@
 import multer from "multer"
 import path from "path"
-// import appError from "./appError"
-// import handleErrorAsync from "./handleErrorAsync"
 
-export const upload = multer({
+const upload = multer({
   limits: {
     fileSize: 2 * 1024 * 1024
   },
@@ -15,3 +13,5 @@ export const upload = multer({
     cb(null, true)
   }
 }).any()
+
+export default upload

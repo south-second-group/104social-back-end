@@ -40,6 +40,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
         req.user = {
             _id: currentUser._id.toString(),
             name: currentUser.name,
+            gender: currentUser.gender,
             photo: (_a = currentUser.photo) !== null && _a !== void 0 ? _a : "",
             password: currentUser.password
         };
@@ -61,6 +62,7 @@ const generateSendJWT = (res, message, user) => {
         profile: {
             _id: user._id,
             name: user.name,
+            gender: user.gender,
             photo: user.photo
         }
     };
