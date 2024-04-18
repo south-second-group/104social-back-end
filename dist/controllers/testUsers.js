@@ -12,13 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const handleErrorAsync_1 = __importDefault(require("../service/handleErrorAsync"));
-const handler_1 = require("../service/handler");
-const appError_1 = __importDefault(require("../service/appError"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const validator_1 = __importDefault(require("validator"));
-const auth_1 = require("../service/auth");
+const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const handleErrorAsync_1 = __importDefault(require("../service/handleErrorAsync"));
+const appError_1 = __importDefault(require("../service/appError"));
+const handler_1 = require("../service/handler");
+const auth_1 = require("../service/auth");
 const testUsersModel_1 = __importDefault(require("../models/testUsersModel"));
 dotenv_1.default.config({ path: "./config.env" });
 const users = {
@@ -92,6 +92,24 @@ const users = {
     })),
     getOwnProfile: (0, handleErrorAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
         (0, handler_1.successHandler)(res, "取得成功", req.user);
+    })),
+    patchProfile: (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        var _a;
+        const { name, photo, gender } = req.body;
+        const data = { name, photo, gender };
+        if (name === "") {
+            (0, appError_1.default)("名稱必填", 400, next);
+            return;
+        }
+        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a._id) !== undefined && req.user._id !== null) {
+            const updateUser = yield testUsersModel_1.default.findByIdAndUpdate(req.user._id, data, {
+                returnDocument: "after",
+                runValidators: true
+            });
+            if (updateUser !== null && updateUser !== undefined) {
+                (0, handler_1.successHandler)(res, "更新成功", updateUser);
+            }
+        }
     }))
 };
 exports.default = users;

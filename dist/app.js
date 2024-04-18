@@ -25,7 +25,7 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, "public")));
 // 路由
-app.use("", testUsers_1.default);
+app.use("/api/test/v1/user", testUsers_1.default); // api/test/v1/user
 app.use("/api-doc", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_output_json_1.default));
 // 404 錯誤
 app.use((req, res, _next) => {
@@ -45,10 +45,11 @@ const resErrorProd = (error, res) => {
     }
 };
 //  develop 環境錯誤
-/* eslint-disable no-console */
 function resErrorDev(res, err) {
     var _a;
+    /* eslint-disable no-console */
     console.log(err);
+    /* eslint-enable no-console */
     const statusCode = (_a = err.statusCode) !== null && _a !== void 0 ? _a : 500;
     const statusText = err !== null && err !== void 0 ? err : "開發環境錯誤";
     res.status(statusCode).json({
@@ -57,7 +58,6 @@ function resErrorDev(res, err) {
         stack: err.stack
     });
 }
-/* eslint-enable no-console */
 // 自訂錯誤處理，依照環境不同，回傳不同錯誤訊息
 app.use((error, req, res, _next) => {
     // dev

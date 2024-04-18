@@ -16,7 +16,7 @@ const router = express.Router()
 
 // 註冊
 router.post(
-  "/api/test/v1/user/register",
+  "/register",
   /**
      * #swagger.tags = ['test Users']
      * #swagger.description = '註冊'
@@ -48,7 +48,7 @@ router.post(
 
 // 登入
 router.post(
-  "/api/test/v1/user/login",
+  "/login",
   /**
      * #swagger.tags = ['test Users']
      * #swagger.description = '登入'
@@ -83,7 +83,7 @@ router.post(
 
 // 取得會員資料
 router.get(
-  "/api/test/v1/user/profile",
+  "/profile",
   checkAuth,
   /**
      * #swagger.tags = ['test Users']
@@ -110,6 +110,44 @@ router.get(
         }
      */
   users.getOwnProfile
+)
+
+// 編輯自己的資訊
+router.patch("/profile", checkAuth,
+  /**
+     * #swagger.tags = ['test Users']
+     * #swagger.description = '編輯自己的資訊'
+     * #swagger.security = [{
+            Bearer: []
+        }]
+     * #swagger.parameters['body'] = {
+            in: 'body',
+            type: 'object',
+            required: true,
+            description: '資料格式',
+            schema: {
+                $name: 'william44',
+                $photo: '222',
+                $gender: 'secret'
+            }
+        }
+
+     * #swagger.responses[200] = {
+            description: '個人資訊',
+            schema: {
+                status: 'success',
+                message: '更新成功',
+                "data": {
+                    "_id": "6614bcf9269fee9fe3784df0",
+                    "name": "william04",
+                    "photo": "222",
+                    "gender": "secret",
+                    "createdAt": "2024-04-09T03:58:49.066Z"
+                }
+            }
+        }
+     */
+  users.patchProfile
 )
 
 const app = express()

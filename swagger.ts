@@ -7,7 +7,7 @@ const doc = {
     description: "A social networking website for connecting people."
   },
   host: ["localhost:3000"], // 正式機 one04social-back-end.onrender.com  / 本地 localhost:3000
-  schemes: ["http","https"], // 正式機 https / 本地 http
+  schemes: ["http"], // 正式機 https / 本地 http
   securityDefinitions: {
     Bearer: {
       type: "apiKey",

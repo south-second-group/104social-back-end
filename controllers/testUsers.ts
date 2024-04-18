@@ -104,7 +104,25 @@ const users = {
     async (req: Request, res: Response, _next: NextFunction) => {
       successHandler(res, "取得成功", req.user)
     }
-  )
+  ),
+  patchProfile: handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { name, photo, gender } = req.body
+    const data = { name, photo, gender }
+
+    if (name === "") {
+      appError("名稱必填", 400, next); return
+    }
+    if (req.user?._id !== undefined && req.user._id !== null) {
+      const updateUser = await User.findByIdAndUpdate(req.user._id, data, {
+        returnDocument: "after",
+        runValidators: true
+      })
+
+      if (updateUser !== null && updateUser !== undefined) {
+        successHandler(res, "更新成功", updateUser)
+      }
+    }
+  })
 }
 
 export default users

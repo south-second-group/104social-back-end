@@ -26,7 +26,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, "public")))
 
 // 路由
-app.use("", testUsersRouter) // api/test/v1/user
+app.use("/api/test/v1/user", testUsersRouter) // api/test/v1/user
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 

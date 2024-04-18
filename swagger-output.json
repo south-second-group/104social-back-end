@@ -10,8 +10,7 @@
   ],
   "basePath": "/",
   "schemes": [
-    "http",
-    "https"
+    "http"
   ],
   "securityDefinitions": {
     "Bearer": {
@@ -224,6 +223,93 @@
                     "createdAt": {
                       "type": "string",
                       "example": "2024-04-07T13:57:42.923Z"
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Bearer": []
+          }
+        ]
+      },
+      "patch": {
+        "tags": [
+          "test Users"
+        ],
+        "description": "編輯自己的資訊",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "description": "資料格式",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "william44"
+                },
+                "photo": {
+                  "type": "string",
+                  "example": "222"
+                },
+                "gender": {
+                  "type": "string",
+                  "example": "secret"
+                }
+              },
+              "required": [
+                "name",
+                "photo",
+                "gender"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "個人資訊",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "更新成功"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "_id": {
+                      "type": "string",
+                      "example": "6614bcf9269fee9fe3784df0"
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "william04"
+                    },
+                    "photo": {
+                      "type": "string",
+                      "example": "222"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "example": "secret"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "example": "2024-04-09T03:58:49.066Z"
                     }
                   }
                 }
