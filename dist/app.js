@@ -74,6 +74,13 @@ app.use((error, req, res, _next) => {
         resErrorProd(error, res);
         return;
     }
+    // Handle 'Unexpected end of form' error
+    if (error.message === "Unexpected end of form") {
+        error.message = "沒有文件被上傳！";
+        error.isOperational = true;
+        resErrorProd(error, res);
+        return;
+    }
     resErrorProd(error, res);
 });
 exports.default = app;
