@@ -95,7 +95,7 @@ router.get("/profile", auth_1.checkAuth,
                   "_id": "6612a656f06e7b681e99952b",
                   "name": "william01",
                   "photo": "",
-                  "gender": "",
+                  "gender": "secret",
                   "createdAt": "2024-04-07T13:57:42.923Z"
               }
           }

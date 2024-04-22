@@ -65,7 +65,7 @@ export default (passport: PassportStatic): void => {
                     name: profile._json.name,
                     email: profile._json.email,
                     photo: profile._json.picture ?? "",
-                    gender: profile._json.gender ?? "",
+                    gender: profile._json.gender ?? "secret",
                     password: hash,
                     googleId: profile.id
                   })

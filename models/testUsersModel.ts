@@ -16,9 +16,9 @@ const userSchema = new mongoose.Schema(
     photo: String,
     gender: {
       type: String,
-      required: [false, "請選擇您的性別"],
+      required: [true, "請選擇您的性別"],
       enum: {
-        values: ["female", "male", ""],
+        values: ["female", "male", "secret"],
         message: "性別格式不正確"
       }
     },

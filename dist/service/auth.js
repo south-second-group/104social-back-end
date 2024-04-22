@@ -45,7 +45,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
         req.user = {
             _id: currentUser._id.toString(),
             name: currentUser.name,
-            gender: (_a = currentUser.gender) !== null && _a !== void 0 ? _a : "",
+            gender: (_a = currentUser.gender) !== null && _a !== void 0 ? _a : "secret",
             photo: (_b = currentUser.photo) !== null && _b !== void 0 ? _b : "",
             password: currentUser.password
         };

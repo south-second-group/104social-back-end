@@ -47,7 +47,7 @@ export const checkAuth = handleErrorAsync(
       req.user = {
         _id: currentUser._id.toString(),
         name: currentUser.name,
-        gender: currentUser.gender ?? "",
+        gender: currentUser.gender ?? "secret",
         photo: currentUser.photo ?? "",
         password: currentUser.password
       }

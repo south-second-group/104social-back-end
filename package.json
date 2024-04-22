@@ -6,7 +6,7 @@
     "dev": "NODE_ENV=develop tsx watch ./bin/www.ts",
     "prod": "NODE_ENV=production tsx watch ./bin/www.ts",
     "swagger": "tsx ./swagger.ts",
-    "preview": "tsx dist/app.js",
+    "preview": "tsx dist/bin/www.js",
     "lint": "eslint **/*.ts app.ts",
     "format": "eslint **/*.ts app.ts --fix",
     "tsc": "npx tsc --watch",
