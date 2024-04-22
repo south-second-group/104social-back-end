@@ -16,9 +16,9 @@ const userSchema = new mongoose.Schema(
     photo: String,
     gender: {
       type: String,
-      required: [true, "請選擇您的性別"],
+      required: [false, "請選擇您的性別"],
       enum: {
-        values: ["female", "male", "secret"],
+        values: ["female", "male", ""],
         message: "性別格式不正確"
       }
     },
@@ -31,7 +31,8 @@ const userSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now
-    }
+    },
+    googleId: String
   },
   {
     versionKey: false

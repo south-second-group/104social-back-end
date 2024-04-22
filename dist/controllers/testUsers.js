@@ -88,7 +88,7 @@ const users = {
             (0, appError_1.default)("您的密碼不正確", 400, next);
             return;
         }
-        (0, auth_1.generateSendJWT)(res, "登入成功", user.toObject());
+        yield (0, auth_1.generateSendJWT)(res, "登入成功", user.toObject());
     })),
     getOwnProfile: (0, handleErrorAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
         (0, handler_1.successHandler)(res, "取得成功", req.user);

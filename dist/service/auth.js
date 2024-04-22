@@ -20,11 +20,16 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const testUsersModel_1 = __importDefault(require("../models/testUsersModel"));
 // 檢查 token 是否存在
 exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     const JWT_SECRET = process.env.JWT_SECRET;
     let token;
     const auth = req.headers.authorization;
-    if (auth !== undefined && auth !== null && auth !== "" && auth.startsWith("Bearer")) {
+    // 從 cookie 中取得 token
+    token = req.cookies.jwt;
+    if (auth !== undefined &&
+        auth !== null &&
+        auth !== "" &&
+        auth.startsWith("Bearer")) {
         token = auth.split(" ")[1];
     }
     if (token === null || token === "" || token === undefined) {
@@ -40,8 +45,8 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
         req.user = {
             _id: currentUser._id.toString(),
             name: currentUser.name,
-            gender: currentUser.gender,
-            photo: (_a = currentUser.photo) !== null && _a !== void 0 ? _a : "",
+            gender: (_a = currentUser.gender) !== null && _a !== void 0 ? _a : "",
+            photo: (_b = currentUser.photo) !== null && _b !== void 0 ? _b : "",
             password: currentUser.password
         };
         next();
@@ -51,7 +56,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
     }
 }));
 // 產生 JWT token
-const generateSendJWT = (res, message, user) => {
+const generateSendJWT = (res, message, user) => __awaiter(void 0, void 0, void 0, function* () {
     const JWT_SECRET = process.env.JWT_SECRET;
     const token = jsonwebtoken_1.default.sign({ id: user._id }, JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_DAY
@@ -66,6 +71,13 @@ const generateSendJWT = (res, message, user) => {
             photo: user.photo
         }
     };
+    // 將 token 存在 cookie 中 (secure: true 選項會確保 cookie 只在 HTTPS 連線中傳送 )
+    res.cookie("jwt", token, { httpOnly: true, secure: false });
+    // res.redirect(
+    // `${process.env.FRONTEND_REDIRECT_URL}`
+    //   `http://localhost:3000?token=${token}&from=google`
+    // )
     (0, handler_1.successHandler)(res, message, data);
-};
+    return token;
+});
 exports.generateSendJWT = generateSendJWT;

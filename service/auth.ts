@@ -21,7 +21,15 @@ export const checkAuth = handleErrorAsync(
     let token: string | undefined
     const auth = req.headers.authorization
 
-    if (auth !== undefined && auth !== null && auth !== "" && auth.startsWith("Bearer")) {
+    // 從 cookie 中取得 token
+    token = req.cookies.jwt
+
+    if (
+      auth !== undefined &&
+      auth !== null &&
+      auth !== "" &&
+      auth.startsWith("Bearer")
+    ) {
       token = auth.split(" ")[1]
     }
 
@@ -39,7 +47,7 @@ export const checkAuth = handleErrorAsync(
       req.user = {
         _id: currentUser._id.toString(),
         name: currentUser.name,
-        gender: currentUser.gender,
+        gender: currentUser.gender ?? "",
         photo: currentUser.photo ?? "",
         password: currentUser.password
       }
@@ -51,7 +59,11 @@ export const checkAuth = handleErrorAsync(
 )
 
 // 產生 JWT token
-export const generateSendJWT = (res: Response, message: string, user: UserInterface): void => {
+export const generateSendJWT = async (
+  res: Response,
+  message: string,
+  user: UserInterface
+): Promise<string> => {
   const JWT_SECRET = process.env.JWT_SECRET as Secret
   const token = jwt.sign({ id: user._id }, JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_DAY
@@ -69,5 +81,14 @@ export const generateSendJWT = (res: Response, message: string, user: UserInterf
     }
   }
 
+  // 將 token 存在 cookie 中 (secure: true 選項會確保 cookie 只在 HTTPS 連線中傳送 )
+  res.cookie("jwt", token, { httpOnly: true, secure: false })
+
+  // res.redirect(
+  // `${process.env.FRONTEND_REDIRECT_URL}`
+  //   `http://localhost:3000?token=${token}&from=google`
+  // )
+
   successHandler(res, message, data)
+  return token
 }

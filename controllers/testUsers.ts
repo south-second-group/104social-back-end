@@ -97,7 +97,7 @@ const users = {
         appError("您的密碼不正確", 400, next); return
       }
 
-      generateSendJWT(res, "登入成功", user.toObject() as UserInterface)
+      await generateSendJWT(res, "登入成功", user.toObject() as UserInterface)
     }
   ),
   getOwnProfile: handleErrorAsync(

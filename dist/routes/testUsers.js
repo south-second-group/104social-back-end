@@ -96,8 +96,6 @@ router.get("/profile", auth_1.checkAuth,
                   "name": "william01",
                   "photo": "",
                   "gender": "",
-                  "followers": [],
-                  "following": [],
                   "createdAt": "2024-04-07T13:57:42.923Z"
               }
           }
