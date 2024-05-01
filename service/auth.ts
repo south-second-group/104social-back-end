@@ -40,7 +40,8 @@ export const checkAuth = handleErrorAsync(
 
     try {
       const decode = jwt.verify(token, JWT_SECRET) as { id: string }
-      const currentUser = await User.findById(decode.id)
+      const currentUser: UserInterface | null = await User.findById(decode.id)
+
       if (currentUser === null || currentUser === undefined) {
         throw new Error("User not found")
       }
@@ -81,14 +82,20 @@ export const generateSendJWT = async (
     }
   }
 
-  // 將 token 存在 cookie 中 (secure: true 選項會確保 cookie 只在 HTTPS 連線中傳送 )
-  res.cookie("jwt", token, { httpOnly: true, secure: false })
-
+  // 傳到前端，並將令牌存到瀏覽器，或用json.send去接收，前端收到再透過前端導向頁面也可以
+  // https 不用擔心，因為是在同一個網域下，所以可以存取
+  // ! stack: "MongooseError: Model.findById() no longer accepts a callback
+  // ! can't call back set header after they are sent to the client
   // res.redirect(
-  // `${process.env.FRONTEND_REDIRECT_URL}`
-  //   `http://localhost:3000?token=${token}&from=google`
+  //   // `${process.env.FRONTEND_REDIRECT_URL}`
+  //   `http://localhost:3000/callback?token=${token}&from=google`
   // )
 
+  // 將 token 存在 cookie 中 (secure: true 選項會確保 cookie 只在 HTTPS 連線中傳送 )
+  // 第三方登入需要，另開視窗才能透過swagger使用token，不然會有以下錯誤
+  res.cookie("jwt", token, { httpOnly: true, secure: false })
+
   successHandler(res, message, data)
+
   return token
 }

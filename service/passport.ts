@@ -80,5 +80,4 @@ export default (passport: PassportStatic): void => {
       }
     )
   )
-  //* eslint-disable @typescript-eslint/no-misused-promises
 }
