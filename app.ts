@@ -10,6 +10,7 @@ import cors from "cors"
 import dotenv from "dotenv"
 import swaggerUI from "swagger-ui-express"
 import passport from "passport"
+import session from "express-session"
 
 import swaggerFile from "./swagger-output.json"
 import { errorHandler } from "./service/handler"
@@ -18,13 +19,17 @@ import testUsersRouter from "./routes/testUsers"
 import uploadRouter from "./routes/upload"
 import authRouter from "./routes/auth"
 import setupPassport from "./service/passport"
-import session from "express-session"
+import payment from "./routes/payment"
 
 const app = express()
 dotenv.config({ path: "./.env" })
 
 // 連線 mongodb
 require("./connections")
+
+// view engine setup
+app.set("views", path.join(__dirname, "views"))
+app.set("view engine", "ejs")
 
 // 載入設定檔
 app.use(cors())
@@ -48,6 +53,7 @@ setupPassport(passport)
 app.use("/api/test/v1/user", testUsersRouter)
 app.use("/upload", uploadRouter)
 app.use("/auth", authRouter)
+app.use("/payment", payment)
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 
@@ -58,9 +64,7 @@ app.use((req: Request, res: Response, _next: NextFunction) => {
 
 // production 環境錯誤
 const resErrorProd = (error: ExtendedError, res: Response): void => {
-  //* eslint-disable no-console */
   console.error("產品環境錯誤", error)
-  //* eslint-enable no-console */
   if (error.isOperational ?? false) {
     errorHandler(res, error.message ?? "", error.statusCode)
   } else {

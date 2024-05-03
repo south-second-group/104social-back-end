@@ -7,6 +7,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "controllers/paymentControllers.js", "service/payment.js", "models/paymentsModel.js"],
   "exclude": ["node_modules"]
 }
