@@ -68,7 +68,7 @@ const resErrorProd = (error: ExtendedError, res: Response): void => {
   if (error.isOperational ?? false) {
     errorHandler(res, error.message ?? "", error.statusCode)
   } else {
-    errorHandler(res, "產品環境系統異常，請洽系統管理遠", 500, "error")
+    errorHandler(res, "產品環境系統異常，請洽系統管理員", 500, "error")
   }
 }
 

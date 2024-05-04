@@ -6,18 +6,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
   </head>
   <body>
-    <form action="/createOrder" method="post">
+    <form action="/payment/createOrder" method="post" style="display: grid;row-gap: 1em;">
       <div>
         email
-        <input type="email" name="Email" value="" />
+        <input type="email" name="Email" value="snowman12320@gmail.com" />
       </div>
       <div>
         Amt
-        <input type="number" name="Amt" value="1000" />
+        $<input type="number" name="Amt" value="666" />
       </div>
       <div>
         ItemDesc
-        <input type="text" name="ItemDesc" value="測試商品" />
+        <input type="text" name="ItemDesc" value="測試商品 104 social" />
       </div>
       <button type="submit">送出</button>
     </form>

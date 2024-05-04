@@ -4,7 +4,20 @@ import crypto from "crypto"
 const router = express.Router()
 require("dotenv").config()
 
-const orders = {}
+interface Result {
+  MerchantOrderNo: string
+}
+
+interface Order {
+  TimeStamp: number
+  MerchantOrderNo: string
+  Amt: number
+  ItemDesc: string
+  Email: string
+  Result: Result
+}
+
+const orders: Record<number, Order> = {}
 
 const {
   MerchantID,
@@ -36,7 +49,7 @@ router.post("/createOrder", (req, res) => {
 
   // 進行訂單加密
   // 加密第一段字串，此段主要是提供交易內容給予藍新金流
-  const aesEncrypt = createSesEncrypt(order)
+  const aesEncrypt = createSesEncrypt(JSON.stringify(order))
   console.error("aesEncrypt:", aesEncrypt)
 
   // 使用 HASH 再次 SHA 加密字串，作為驗證使用
@@ -48,11 +61,11 @@ router.post("/createOrder", (req, res) => {
   orders[TimeStamp] = order
   console.error(orders[TimeStamp])
 
-  res.redirect(`/check/${TimeStamp}`)
+  res.redirect(`/payment/check/${TimeStamp}`)
 })
 
 router.get("/check/:id", (req, res, next) => {
-  const { id } = req.params
+  const id = Number(req.params.id)
   const order = orders[id]
   console.error(order)
   res.render("check", {
@@ -102,7 +115,7 @@ router.post("/newebpay_notify", function (req, res, next) {
 })
 
 // 字串組合
-function genDataChain (order) {
+function genDataChain (order: Order) {
   if (typeof MerchantID === "undefined") {
     throw new Error("MerchantID is undefined")
   }
@@ -110,8 +123,8 @@ function genDataChain (order) {
   return `MerchantID=${MerchantID}&TimeStamp=${order.TimeStamp
     }&Version=${Version}&RespondType=${RespondType}&MerchantOrderNo=${order.MerchantOrderNo
     }&Amt=${order.Amt}&NotifyURL=${encodeURIComponent(
-      NotifyUrl
-    )}&ReturnURL=${encodeURIComponent(ReturnUrl)}&ItemDesc=${encodeURIComponent(
+      NotifyUrl || ""
+    )}&ReturnURL=${encodeURIComponent(ReturnUrl || "")}&ItemDesc=${encodeURIComponent(
       order.ItemDesc
     )}&Email=${encodeURIComponent(order.Email)}`
 }
@@ -123,19 +136,20 @@ function genDataChain (order) {
 
 // 對應文件 P17：使用 aes 加密
 // $edata1=bin2hex(openssl_encrypt($data1, "AES-256-CBC", $key, OPENSSL_RAW_DATA, $iv));
-function createSesEncrypt (TradeInfo: string) {
+function createSesEncrypt (TradeInfo: string): string {
   if (typeof HASHKEY === "undefined" || typeof HASHIV === "undefined") {
     throw new Error("HASHKEY or HASHIV is undefined")
   }
 
+  const order: Order = JSON.parse(TradeInfo)
   const encrypt = crypto.createCipheriv("aes-256-cbc", HASHKEY, HASHIV)
-  const enc = encrypt.update(genDataChain(TradeInfo), "utf8", "hex")
+  const enc = encrypt.update(genDataChain(order), "utf8", "hex")
   return enc + encrypt.final("hex")
 }
 
 // 對應文件 P18：使用 sha256 加密
 // $hashs="HashKey=".$key."&".$edata1."&HashIV=".$iv;
-function createShaEncrypt (aesEncrypt: string) {
+function createShaEncrypt (aesEncrypt: string): string {
   const sha = crypto.createHash("sha256")
   const plainText = `HashKey=${HASHKEY}&${aesEncrypt}&HashIV=${HASHIV}`
 
@@ -143,7 +157,7 @@ function createShaEncrypt (aesEncrypt: string) {
 }
 
 // 對應文件 21, 22 頁：將 aes 解密
-function createSesDecrypt (TradeInfo: string) {
+function createSesDecrypt (TradeInfo: string): Order {
   if (typeof HASHKEY === "undefined" || typeof HASHIV === "undefined") {
     throw new Error("HASHKEY or HASHIV is undefined")
   }
@@ -152,6 +166,7 @@ function createSesDecrypt (TradeInfo: string) {
   decrypt.setAutoPadding(false)
   const text = decrypt.update(TradeInfo, "hex", "utf8")
   const plainText = text + decrypt.final("utf8")
+  // eslint-disable-next-line no-control-regex
   const result = plainText.replace(/[\x00-\x20]+/g, "")
   return JSON.parse(result)
 }
