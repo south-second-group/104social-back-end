@@ -16,7 +16,7 @@ const paymentsSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
-      required: [true, "請填寫訂閱者 ID"]
+      required: [true, "缺少使用者 ID"]
     },
     // 交易金額
     Amt: {

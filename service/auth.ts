@@ -22,7 +22,7 @@ export const checkAuth = handleErrorAsync(
     const auth = req.headers.authorization
 
     // 從 cookie 中取得 token
-    token = req.cookies.jwt
+    token = req.cookies["104social_token"]
 
     if (
       auth !== undefined &&
@@ -86,7 +86,7 @@ export const generateSendJWT = async (
   if (isThirdPartyLogin) {
     res.redirect(`${process.env.FRONTEND_REDIRECT_URL}/callback?token=${token}&name=${user.name}&photo=${user.photo}`)
   } else {
-    res.cookie("jwt", token, { httpOnly: false, secure: false })
+    res.cookie("104social_token", token, { httpOnly: false, secure: false })
     successHandler(res, message, data)
   }
 

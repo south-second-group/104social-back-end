@@ -5,8 +5,8 @@ import dotenv from "dotenv"
 import { successHandler } from "../service/handler"
 import appError from "../service/appError"
 import Payment from "../models/paymentsModel"
-import User from "../models/testUsersModel"
-// import { checkAuth } from "../service/auth"
+// import User from "../models/testUsersModel"
+import { checkAuth } from "../service/auth"
 
 const router = express.Router()
 dotenv.config()
@@ -44,7 +44,7 @@ router.get("/", function (req, res) {
 
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
-router.post("/createOrder", async (req, res, _next): Promise<void> => {
+router.post("/createOrder", checkAuth, async (req, res, _next): Promise<void> => {
   const data = req.body
   // console.error(data)
 
@@ -101,7 +101,7 @@ router.post("/newebpay_return", function (_req, _res) {
 // 確認交易：Notify
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
-router.post("/newebpay_notify", async function (req, res, _next) {
+router.post("/newebpay_notify", checkAuth, async function (req, res, _next) {
   // console.error("req.body notify data", req.body)
   const response = req.body
 
@@ -131,8 +131,9 @@ router.post("/newebpay_notify", async function (req, res, _next) {
   console.warn("付款完成，訂單：", orders[orderNo])
 
   //* 儲存資料庫
-  // const { _id } = req.user ?? {}
-  const _id = await User.findOne({ email: data.Email }, "_id")
+  const { _id } = req.user ?? {}
+  // const _id = await User.findOne({ email: data.Email }, "_id")
+  // console.log(_id?._id);
 
   const postPayment = await Payment.create({
     user: _id,
