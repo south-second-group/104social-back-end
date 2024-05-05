@@ -43,7 +43,7 @@ router.get("/", function (req, res) {
 
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
-router.post("/createOrder",checkAuth, async (req, res, _next): Promise<void> => {
+router.post("/createOrder", async (req, res, _next): Promise<void> => {
   const data = req.body
   // console.error(data)
 
@@ -91,7 +91,7 @@ router.get("/check/:id", (req, res) => {
 })
 
 // 交易成功：Return （可直接解密，將資料呈現在畫面上）
-router.post("/newebpay_return", function (_req, _res) {
+router.post("/newebpay_return", checkAuth, function (_req, _res) {
   // console.error("req.body return data", req.body)
   // 到時應該轉址到前端的訂閱成功頁面
   _res.render("success", { title: "Express" })
@@ -100,7 +100,7 @@ router.post("/newebpay_return", function (_req, _res) {
 // 確認交易：Notify
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
-router.post("/newebpay_notify", checkAuth, async function (req, res, _next) {
+router.post("/newebpay_notify", async function (req, res, _next) {
   // console.error("req.body notify data", req.body)
   const response = req.body
 

@@ -25,7 +25,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
     let token;
     const auth = req.headers.authorization;
     // 從 cookie 中取得 token
-    token = req.cookies["104social"];
+    token = req.cookies.jwt;
     if (auth !== undefined &&
         auth !== null &&
         auth !== "" &&
@@ -75,7 +75,7 @@ const generateSendJWT = (res_1, message_1, user_1, ...args_1) => __awaiter(void 
         res.redirect(`${process.env.FRONTEND_REDIRECT_URL}/callback?token=${token}&name=${user.name}&photo=${user.photo}`);
     }
     else {
-        res.cookie("104social", token, { httpOnly: true, secure: false });
+        res.cookie("jwt", token, { httpOnly: false, secure: false });
         (0, handler_1.successHandler)(res, message, data);
     }
     return token;
