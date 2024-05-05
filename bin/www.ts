@@ -84,10 +84,7 @@ function onListening (): void {
       ? "null"
       : "http://localhost:" + addr.port
   debug("Listening on " + bind)
-  // eslint-disable-next-line no-console
-  console.log("---------------------------------------")
-  // eslint-disable-next-line no-console
-  console.log("| Listening on  " + bind + " |")
-  // eslint-disable-next-line no-console
-  console.log("---------------------------------------")
+  console.warn("---------------------------------------")
+  console.warn("| Listening on  " + bind + " |")
+  console.warn("---------------------------------------")
 }

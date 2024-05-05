@@ -10,10 +10,8 @@ const DB = process.env.DATABASE?.replace(
 
 mongoose
   .connect(DB + "testDB", {})
-/* eslint-disable no-console */
-  .then(() => { console.log("連線資料庫成功") })
+  .then(() => { console.warn("連線資料庫成功") })
   .catch((error) => { console.error("連線資料庫失敗:", error) })
-/* eslint-enable no-console */
 // useCreateIndex: true,
 // useFindAndModify: false,
 // useUnifiedTopology: true,

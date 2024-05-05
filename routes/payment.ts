@@ -2,6 +2,11 @@ import express from "express"
 import crypto from "crypto"
 import dotenv from "dotenv"
 
+import { successHandler } from "../service/handler"
+import appError from "../service/appError"
+import Payment from "../models/paymentsModel"
+import { checkAuth } from "../service/auth"
+
 const router = express.Router()
 dotenv.config()
 
@@ -35,12 +40,16 @@ const RespondType = "JSON"
 router.get("/", function (req, res) {
   res.render("index", { title: "Express" })
 })
-router.post("/createOrder", (req, res) => {
+
+// eslint說不用void 但tsc說要void
+// eslint-disable-next-line
+router.post("/createOrder",checkAuth, async (req, res, _next): Promise<void> => {
   const data = req.body
-  console.error(data)
+  // console.error(data)
 
   // 使用 Unix Timestamp 作為訂單編號（金流也需要加入時間戳記）
   const TimeStamp = Math.round(new Date().getTime() / 1000)
+
   const order = {
     ...data,
     TimeStamp,
@@ -51,16 +60,16 @@ router.post("/createOrder", (req, res) => {
   // 進行訂單加密
   // 加密第一段字串，此段主要是提供交易內容給予藍新金流
   const aesEncrypt = createSesEncrypt(JSON.stringify(order))
-  console.error("aesEncrypt:", aesEncrypt)
+  // console.error("aesEncrypt:", aesEncrypt)
 
   // 使用 HASH 再次 SHA 加密字串，作為驗證使用
   const shaEncrypt = createShaEncrypt(aesEncrypt)
-  console.error("shaEncrypt:", shaEncrypt)
+  // console.error("shaEncrypt:", shaEncrypt)
   order.aesEncrypt = aesEncrypt
   order.shaEncrypt = shaEncrypt
 
   orders[TimeStamp] = order
-  console.error(orders[TimeStamp])
+  // console.warn(orders[TimeStamp])
 
   res.redirect(`/payment/check/${TimeStamp}`)
 })
@@ -68,7 +77,8 @@ router.post("/createOrder", (req, res) => {
 router.get("/check/:id", (req, res) => {
   const id = Number(req.params.id)
   const order = orders[id]
-  console.error(order)
+  // console.warn(order)
+
   res.render("check", {
     title: "Express",
     PayGateWay,
@@ -81,25 +91,28 @@ router.get("/check/:id", (req, res) => {
 })
 
 // 交易成功：Return （可直接解密，將資料呈現在畫面上）
-router.post("/newebpay_return", function (req, res) {
-  console.error("req.body return data", req.body)
-  res.render("success", { title: "Express" })
+router.post("/newebpay_return", function (_req, _res) {
+  // console.error("req.body return data", req.body)
+  // 到時應該轉址到前端的訂閱成功頁面
+  _res.render("success", { title: "Express" })
 })
 
 // 確認交易：Notify
-router.post("/newebpay_notify", function (req, res) {
-  console.error("req.body notify data", req.body)
+// eslint說不用void 但tsc說要void
+// eslint-disable-next-line
+router.post("/newebpay_notify", checkAuth, async function (req, res, _next) {
+  // console.error("req.body notify data", req.body)
   const response = req.body
 
   // 解密交易內容
   const data = createSesDecrypt(String(response.TradeInfo))
-  console.error("data:", data)
+  // console.warn("data:", data)
 
   // Convert MerchantOrderNo to number
   const orderNo = Number(data?.Result?.MerchantOrderNo)
 
   // 取得交易內容，並查詢本地端資料庫是否有相符的訂單
-  console.error(orders[orderNo])
+  // console.warn(orders[orderNo])
 
   if (orders[orderNo] !== undefined) {
     console.error("找不到訂單")
@@ -114,7 +127,29 @@ router.post("/newebpay_notify", function (req, res) {
   }
 
   // 交易完成，將成功資訊儲存於資料庫
-  console.error("付款完成，訂單：", orders[orderNo])
+  console.warn("付款完成，訂單：", orders[orderNo])
+
+  //* 儲存資料庫
+  const { _id } = req.user ?? {}
+
+  const postPayment = await Payment.create({
+    user: _id,
+    Amt: data.Amt,
+    ItemDesc: data.ItemDesc,
+    TradeNo: response.TradeNo,
+    MerchantOrderNo: data.Result.MerchantOrderNo,
+    PaymentType: response.PaymentType,
+    PayTime: new Date(),
+    isPaid: true
+  })
+
+  if (postPayment === null || postPayment === undefined) {
+    appError("建立失敗", 400, _next); return
+  }
+
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the clien
+  // 前端打 API 時，會response 相關資訊
+  successHandler(res, "訂閱成功", postPayment)
 
   return res.end()
 })

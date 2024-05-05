@@ -22,7 +22,7 @@ export const checkAuth = handleErrorAsync(
     const auth = req.headers.authorization
 
     // 從 cookie 中取得 token
-    token = req.cookies.jwt
+    token = req.cookies["104social"]
 
     if (
       auth !== undefined &&

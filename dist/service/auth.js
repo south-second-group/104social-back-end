@@ -25,7 +25,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
     let token;
     const auth = req.headers.authorization;
     // 從 cookie 中取得 token
-    token = req.cookies.jwt;
+    token = req.cookies["104social"];
     if (auth !== undefined &&
         auth !== null &&
         auth !== "" &&

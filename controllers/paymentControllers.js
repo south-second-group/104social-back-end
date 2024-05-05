@@ -45,7 +45,7 @@ const payments = {
       return next(appError(400, "建立失敗", next, "postPayment"))
     }
 
-    // successHandler(201, "新增成功", postPayment, res)
+    successHandler(201, "新增成功", postPayment, res)
   },
   async getOrder (req, res, next) {
     const { MerchantOrderNo } = req.params
