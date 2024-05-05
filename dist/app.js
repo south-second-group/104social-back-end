@@ -12,17 +12,21 @@ const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const passport_1 = __importDefault(require("passport"));
+const express_session_1 = __importDefault(require("express-session"));
 const swagger_output_json_1 = __importDefault(require("./swagger-output.json"));
 const handler_1 = require("./service/handler");
 const testUsers_1 = __importDefault(require("./routes/testUsers"));
 const upload_1 = __importDefault(require("./routes/upload"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const passport_2 = __importDefault(require("./service/passport"));
-const express_session_1 = __importDefault(require("express-session"));
+const payment_1 = __importDefault(require("./routes/payment"));
 const app = (0, express_1.default)();
 dotenv_1.default.config({ path: "./.env" });
 // 連線 mongodb
 require("./connections");
+// view engine setup
+app.set("views", path_1.default.join(__dirname, "views"));
+app.set("view engine", "ejs");
 // 載入設定檔
 app.use((0, cors_1.default)());
 app.use((0, morgan_1.default)("dev"));
@@ -42,6 +46,7 @@ app.use(passport_1.default.session());
 app.use("/api/test/v1/user", testUsers_1.default);
 app.use("/upload", upload_1.default);
 app.use("/auth", auth_1.default);
+app.use("/payment", payment_1.default);
 app.use("/api-doc", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_output_json_1.default));
 // 404 錯誤
 app.use((req, res, _next) => {
@@ -50,14 +55,12 @@ app.use((req, res, _next) => {
 // production 環境錯誤
 const resErrorProd = (error, res) => {
     var _a, _b;
-    //* eslint-disable no-console */
     console.error("產品環境錯誤", error);
-    //* eslint-enable no-console */
     if ((_a = error.isOperational) !== null && _a !== void 0 ? _a : false) {
         (0, handler_1.errorHandler)(res, (_b = error.message) !== null && _b !== void 0 ? _b : "", error.statusCode);
     }
     else {
-        (0, handler_1.errorHandler)(res, "產品環境系統異常，請洽系統管理遠", 500, "error");
+        (0, handler_1.errorHandler)(res, "產品環境系統異常，請洽系統管理員", 500, "error");
     }
 };
 //  develop 環境錯誤

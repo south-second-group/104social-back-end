@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    <%= title %>
+  </title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"></script>
+  <style>
+    form  {
+      display: flex;
+      flex-direction: column;
+    }
+
+    button{
+      margin-top: 1em;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <form action="<%- PayGateWay %>" method="post">
+      <label for="MerchantID">Merchant</label>
+      <input type="text" name="MerchantID" value="<%- MerchantID %>" />
+      <label for="TradeSha">TradeSha</label>
+      <input type="text" name="TradeSha" value="<%- order.shaEncrypt %>" />
+      <label for="TradeInfo">TradeInfo</label>
+      <input type="text" name="TradeInfo" value="<%- order.aesEncrypt %>" />
+      <label for="TimeStamp">TimeStamp</label>
+      <input type="text" name="TimeStamp" value="<%- order.TimeStamp %>" />
+      <label for="Version">Version</label>
+      <input type="text" name="Version" value="<%- Version %>" />
+      <label for="NotifyUrl">NotifyUrl</label>
+      <input type="text" name="NotifyUrl" value="<%- NotifyUrl %>" />
+      <label for="ReturnUrl">ReturnUrl</label>
+      <input type="text" name="ReturnUrl" value="<%- ReturnUrl %>" />
+      <br>
+      <label for="MerchantOrderNo">MerchantOrderNo</label>
+      <input type="text" name="MerchantOrderNo" value="<%- order.MerchantOrderNo %>" />
+      <label for="Amt">Amt</label>
+      $<input type="text" name="Amt" value="<%- order.Amt %>" />
+      <label for="ItemDesc">ItemDesc</label>
+      <input type="text" name="ItemDesc" value="<%- order.ItemDesc %>" />
+      <label for="Email">Email</label>
+      <input type="email" name="Email" value="<%- order.Email %>" />
+      <button type="submit">送出</button>
+    </form>
+  </div>
+</body>
+
+</html>

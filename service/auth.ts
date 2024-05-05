@@ -22,7 +22,7 @@ export const checkAuth = handleErrorAsync(
     const auth = req.headers.authorization
 
     // 從 cookie 中取得 token
-    token = req.cookies.jwt
+    token = req.cookies["104social_token"]
 
     if (
       auth !== undefined &&
@@ -40,7 +40,8 @@ export const checkAuth = handleErrorAsync(
 
     try {
       const decode = jwt.verify(token, JWT_SECRET) as { id: string }
-      const currentUser = await User.findById(decode.id)
+      const currentUser: UserInterface | null = await User.findById(decode.id)
+
       if (currentUser === null || currentUser === undefined) {
         throw new Error("User not found")
       }
@@ -62,7 +63,8 @@ export const checkAuth = handleErrorAsync(
 export const generateSendJWT = async (
   res: Response,
   message: string,
-  user: UserInterface
+  user: UserInterface,
+  isThirdPartyLogin: boolean = false
 ): Promise<string> => {
   const JWT_SECRET = process.env.JWT_SECRET as Secret
   const token = jwt.sign({ id: user._id }, JWT_SECRET, {
@@ -81,14 +83,12 @@ export const generateSendJWT = async (
     }
   }
 
-  // 將 token 存在 cookie 中 (secure: true 選項會確保 cookie 只在 HTTPS 連線中傳送 )
-  res.cookie("jwt", token, { httpOnly: true, secure: false })
+  if (isThirdPartyLogin) {
+    res.redirect(`${process.env.FRONTEND_REDIRECT_URL}/callback?token=${token}&name=${user.name}&photo=${user.photo}`)
+  } else {
+    res.cookie("104social_token", token, { httpOnly: false, secure: false })
+    successHandler(res, message, data)
+  }
 
-  // res.redirect(
-  // `${process.env.FRONTEND_REDIRECT_URL}`
-  //   `http://localhost:3000?token=${token}&from=google`
-  // )
-
-  successHandler(res, message, data)
   return token
 }

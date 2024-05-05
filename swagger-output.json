@@ -6,11 +6,11 @@
     "version": "1.0.0"
   },
   "host": [
-    "localhost:3000"
+    "one04social-back-end.onrender.com"
   ],
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "securityDefinitions": {
     "Bearer": {
@@ -326,6 +326,84 @@
           },
           "500": {
             "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/payment/": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/payment/createOrder": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/payment/check/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/payment/newebpay_return": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/payment/newebpay_notify": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "TradeInfo": {
+                  "example": "any"
+                },
+                "TradeNo": {
+                  "example": "any"
+                },
+                "PaymentType": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
