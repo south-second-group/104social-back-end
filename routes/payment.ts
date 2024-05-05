@@ -107,7 +107,7 @@ router.post("/newebpay_return", function (_req, _res) {
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
 router.post("/newebpay_notify", async function (req, res, _next) {
-  // console.error("req.body notify data", req.body)
+  console.error("req.body notify data", req.body)
   const response = req.body
 
   // 解密交易內容
@@ -133,7 +133,7 @@ router.post("/newebpay_notify", async function (req, res, _next) {
   }
 
   // 交易完成，將成功資訊儲存於資料庫
-  // console.warn("付款完成，訂單：", orders[orderNo])
+  console.warn("付款完成，訂單：", orders[orderNo])
 
   //* 儲存資料庫
   // const { _id } = req.user ?? {}
@@ -141,7 +141,7 @@ router.post("/newebpay_notify", async function (req, res, _next) {
   // console.log(_id?._id.toString();
 
   const postPayment = await Payment.create({
-    user: data._id,
+    user: orders[orderNo]._id,
     Amt: data.Amt,
     ItemDesc: data.ItemDesc,
     TradeNo: response.TradeNo,
