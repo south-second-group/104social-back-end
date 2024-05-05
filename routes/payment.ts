@@ -48,8 +48,6 @@ router.post("/createOrder", async (req, res, _next): Promise<void> => {
   const data = req.body
   // console.error(data)
 
-  console.log(await User.findOne({ email: data.Email }, "_id"))
-
   // 使用 Unix Timestamp 作為訂單編號（金流也需要加入時間戳記）
   const TimeStamp = Math.round(new Date().getTime() / 1000)
 
@@ -117,7 +115,7 @@ router.post("/newebpay_notify", async function (req, res, _next) {
   // 取得交易內容，並查詢本地端資料庫是否有相符的訂單
   // console.warn(orders[orderNo])
 
-  if (orders[orderNo] !== undefined) {
+  if (orders[orderNo] === undefined) {
     console.error("找不到訂單")
     return res.end()
   }
