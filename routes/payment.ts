@@ -13,6 +13,9 @@ dotenv.config()
 
 interface Result {
   MerchantOrderNo: string
+  Amt: number
+  TradeNo: string
+  PaymentType: string
 }
 
 interface Order {
@@ -38,19 +41,20 @@ const {
 } = process.env
 const RespondType = "JSON"
 
-// 建立訂單
+// 輸入訂單
 router.get("/", function (req, res) {
   res.render("index", { title: "Express" })
 })
 
+// 產生訂單
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
 router.post("/createOrder", checkAuth, async (req, res, _next): Promise<void> => {
   const data = req.body
-  // console.error(data)
+  // console.error(data) // 訂單資訊
 
   const { _id } = req.user ?? {}
-  console.warn(_id)// 662622803538da52e639144e
+  // console.warn(_id) // 使用者資訊
 
   // 使用 Unix Timestamp 作為訂單編號（金流也需要加入時間戳記）
   const TimeStamp = Math.round(new Date().getTime() / 1000)
@@ -80,11 +84,13 @@ router.post("/createOrder", checkAuth, async (req, res, _next): Promise<void> =>
   res.redirect(`/payment/check/${TimeStamp}`)
 })
 
+// 交易頁面
 router.get("/check/:id", (req, res) => {
   const id = Number(req.params.id)
   const order = orders[id]
   // console.warn(order)
 
+  // 確認訂單頁 並觸發payGateWay
   res.render("check", {
     title: "Express",
     PayGateWay,
@@ -98,7 +104,8 @@ router.get("/check/:id", (req, res) => {
 
 // 交易成功：Return （可直接解密，將資料呈現在畫面上）
 router.post("/newebpay_return", function (_req, _res) {
-  // console.error("req.body return data", req.body)
+  // console.warn("req.body return data", req.body)
+
   // 到時應該轉址到前端的訂閱成功頁面
   _res.render("success", { title: "Express" })
 })
@@ -107,12 +114,13 @@ router.post("/newebpay_return", function (_req, _res) {
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
 router.post("/newebpay_notify", async function (req, res, _next) {
-  console.error("req.body notify data", req.body)
+  console.error("req.body notify data", req.body) // 交易成功資訊
   const response = req.body
 
   // 解密交易內容
   const data = createSesDecrypt(String(response.TradeInfo))
-  console.warn("data:", data)
+  // console.warn("data:", data) // 交易內容
+  // const data = { Message: '模擬付款成功', Result: { MerchantID: 'MS152353407', Amt: 666, TradeNo: '24050520574412115', MerchantOrderNo: '1714913850', RespondType: 'JSON', IP: '27.240.193.16', EscrowBank: 'HNCB', PaymentType: 'WEBATM', PayTime: '2024-05-0520:57:45', PayerAccount5Code: '12345', PayBankCode: '809' } };
 
   // Convert MerchantOrderNo to number
   const orderNo = Number(data?.Result?.MerchantOrderNo)
@@ -134,19 +142,18 @@ router.post("/newebpay_notify", async function (req, res, _next) {
 
   // 交易完成，將成功資訊儲存於資料庫
   console.warn("付款完成，訂單：", orders[orderNo])
-
-  //* 儲存資料庫
-  // const { _id } = req.user ?? {}
+  // _id: '6614c2e685cd6b5694eeb6fc', Email: 'william01@gmail.com', Amt: 666, ItemDesc: '測試商品 104 social', TimeStamp: 1714913850, MerchantOrderNo: 1714913850, aesEncrypt: aesEncrypt, shaEncrypt: shaEncrypt
   // const _id = await User.findOne({ email: data.Email }, "_id")
   // console.log(_id?._id.toString();
 
+  //* 儲存資料庫
   const postPayment = await Payment.create({
     user: orders[orderNo]._id,
-    Amt: data.Amt,
-    ItemDesc: data.ItemDesc,
-    TradeNo: response.TradeNo,
+    Amt: orders[orderNo].Amt,
+    ItemDesc: orders[orderNo].ItemDesc,
+    TradeNo: data.Result.TradeNo,
     MerchantOrderNo: data.Result.MerchantOrderNo,
-    PaymentType: response.PaymentType,
+    PaymentType: data.Result.PaymentType,
     PayTime: new Date(),
     isPaid: true
   })
@@ -155,8 +162,8 @@ router.post("/newebpay_notify", async function (req, res, _next) {
     appError("建立失敗", 400, _next); return
   }
 
-  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the clien
-  // 前端打 API 時，會response 相關資訊
+  // Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+  // 前端打 API 時，會response 相關資訊 > 無法使用
   successHandler(res, "訂閱成功", postPayment)
 
   return res.end()
