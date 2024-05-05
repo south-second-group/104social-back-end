@@ -122,7 +122,7 @@ router.post("/newebpay_notify", async function (req, res, _next) {
 
   // 使用 HASH 再次 SHA 加密字串，確保比對一致（確保不正確的請求觸發交易成功）
   const thisShaEncrypt = createShaEncrypt(String(response.TradeInfo))
-  if (thisShaEncrypt !== "") {
+  if (thisShaEncrypt === "") {
     console.error("付款失敗：TradeSha 不一致")
     return res.end()
   }
