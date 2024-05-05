@@ -7,3 +7,6 @@
 "typeCheck": "npx tsc --watch",
 "lint:watch": "nodemon --exec 'npm run lint' --watch ."
 
+
+1. swagger要注意 網域要一樣才拿得到token
+2. 要用swagger去取得token 才能在/createOrder拿到 id 

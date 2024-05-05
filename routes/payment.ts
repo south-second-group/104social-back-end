@@ -5,8 +5,8 @@ import dotenv from "dotenv"
 import { successHandler } from "../service/handler"
 import appError from "../service/appError"
 import Payment from "../models/paymentsModel"
-import User from "../models/testUsersModel"
-// import { checkAuth } from "../service/auth"
+// import User from "../models/testUsersModel"
+import { checkAuth } from "../service/auth"
 
 const router = express.Router()
 dotenv.config()
@@ -16,6 +16,7 @@ interface Result {
 }
 
 interface Order {
+  _id: string
   TimeStamp: number
   MerchantOrderNo: string
   Amt: number
@@ -44,17 +45,18 @@ router.get("/", function (req, res) {
 
 // eslint說不用void 但tsc說要void
 // eslint-disable-next-line
-router.post("/createOrder", async (req, res, _next): Promise<void> => {
+router.post("/createOrder", checkAuth, async (req, res, _next): Promise<void> => {
   const data = req.body
   // console.error(data)
 
   const { _id } = req.user ?? {}
-  console.log(_id)
+  console.warn(_id)// 662622803538da52e639144e
 
   // 使用 Unix Timestamp 作為訂單編號（金流也需要加入時間戳記）
   const TimeStamp = Math.round(new Date().getTime() / 1000)
 
   const order = {
+    _id,
     ...data,
     TimeStamp,
     Amt: parseInt(String(data.Amt)),
@@ -110,7 +112,7 @@ router.post("/newebpay_notify", async function (req, res, _next) {
 
   // 解密交易內容
   const data = createSesDecrypt(String(response.TradeInfo))
-  // console.warn("data:", data)
+  console.warn("data:", data)
 
   // Convert MerchantOrderNo to number
   const orderNo = Number(data?.Result?.MerchantOrderNo)
@@ -131,16 +133,15 @@ router.post("/newebpay_notify", async function (req, res, _next) {
   }
 
   // 交易完成，將成功資訊儲存於資料庫
-  console.warn("付款完成，訂單：", orders[orderNo])
+  // console.warn("付款完成，訂單：", orders[orderNo])
 
   //* 儲存資料庫
   // const { _id } = req.user ?? {}
-
-  const _id = await User.findOne({ email: data.Email }, "_id")
-  // console.log(_id?._id);
+  // const _id = await User.findOne({ email: data.Email }, "_id")
+  // console.log(_id?._id.toString();
 
   const postPayment = await Payment.create({
-    user: _id?._id,
+    user: data._id,
     Amt: data.Amt,
     ItemDesc: data.ItemDesc,
     TradeNo: response.TradeNo,
