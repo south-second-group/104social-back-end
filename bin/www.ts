@@ -7,8 +7,9 @@
 import app from "../app"
 import debugModule from "debug"
 import http from "http"
+import wss1 from "../service/ws"
+import { parse } from "url"
 const debug = debugModule("104social:server")
-
 /**
  * Get port from environment and store in Express.
  */
@@ -21,6 +22,18 @@ app.set("port", port)
  */
 
 const server = http.createServer(app)
+
+server.on("upgrade", function upgrade (request, socket, head) {
+  const { pathname } = parse(request.url)
+
+  if (pathname === "/ws") {
+    wss1.handleUpgrade(request, socket, head, function done (ws) {
+      wss1.emit("connection", ws, request)
+    })
+  } else {
+    socket.destroy()
+  }
+})
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -78,11 +91,11 @@ function onError (error: NodeJS.ErrnoException): void {
 function onListening (): void {
   const addr = server.address()
   const bind =
-  typeof addr === "string"
-    ? "pipe " + addr
-    : addr === null
-      ? "null"
-      : "http://localhost:" + addr.port
+    typeof addr === "string"
+      ? "pipe " + addr
+      : addr === null
+        ? "null"
+        : "http://localhost:" + addr.port
   debug("Listening on " + bind)
   console.warn("---------------------------------------")
   console.warn("| Listening on  " + bind + " |")

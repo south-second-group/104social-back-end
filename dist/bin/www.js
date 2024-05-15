@@ -11,6 +11,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("../app"));
 const debug_1 = __importDefault(require("debug"));
 const http_1 = __importDefault(require("http"));
+const ws_1 = __importDefault(require("../service/ws"));
+const url_1 = require("url");
 const debug = (0, debug_1.default)("104social:server");
 /**
  * Get port from environment and store in Express.
@@ -21,6 +23,17 @@ app_1.default.set("port", port);
  * Create HTTP server.
  */
 const server = http_1.default.createServer(app_1.default);
+server.on("upgrade", function upgrade(request, socket, head) {
+    const { pathname } = (0, url_1.parse)(request.url);
+    if (pathname === "/ws") {
+        ws_1.default.handleUpgrade(request, socket, head, function done(ws) {
+            ws_1.default.emit("connection", ws, request);
+        });
+    }
+    else {
+        socket.destroy();
+    }
+});
 /**
  * Listen on provided port, on all network interfaces.
  */

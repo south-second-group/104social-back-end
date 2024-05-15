@@ -151,8 +151,6 @@ router.patch("/profile", checkAuth,
 const app = express()
 app.use(router)
 
-//* eslint-disable no-console */
-// console.log(router)
-//* eslint-enable no-console */
+// console.error('路由層錯誤：',router)
 
 export default router

@@ -2,12 +2,12 @@ import { type Request, type Response, type NextFunction } from "express"
 import validator from "validator"
 import bcrypt from "bcryptjs"
 import dotenv from "dotenv"
+
 import handleErrorAsync from "../service/handleErrorAsync"
 import appError from "../service/appError"
 import { successHandler } from "../service/handler"
 import { generateSendJWT } from "../service/auth"
 import { type UserInterface } from "../types/user"
-
 import User from "../models/testUsersModel"
 
 dotenv.config({ path: "./config.env" })

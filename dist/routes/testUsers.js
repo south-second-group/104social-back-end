@@ -140,7 +140,5 @@ router.patch("/profile", auth_1.checkAuth,
 testUsers_1.default.patchProfile);
 const app = (0, express_1.default)();
 app.use(router);
-//* eslint-disable no-console */
-// console.log(router)
-//* eslint-enable no-console */
+// console.error('路由層錯誤：',router)
 exports.default = router;
