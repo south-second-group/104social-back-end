@@ -67,7 +67,7 @@ export const generateSendJWT = async (
   isThirdPartyLogin: boolean = false
 ): Promise<string> => {
   const JWT_SECRET = process.env.JWT_SECRET as Secret
-  const token = jwt.sign({ id: user._id }, JWT_SECRET, {
+  const token = jwt.sign({ id: user._id, name: user.name, photo: user.photo }, JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_DAY
   })
 

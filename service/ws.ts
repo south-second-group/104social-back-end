@@ -1,84 +1,166 @@
+// import { v4 as uuidv4 } from "uuid"
+// import cookieParser from 'cookie-parser'
 import WebSocket from "ws"
-import { v4 as uuidv4 } from "uuid"
+import mongoose from "mongoose"
+import jwt from "jsonwebtoken"
 
-// const mongoose = require('mongoose');
-// const Invite = mongoose.model(
-//   'Invite',
-//   new mongoose.Schema({
-//     from: String,
-//     to: String,
-//     // ws.invites = []; // 儲存邀請的 UUID
-//     // ws.invitedBy = []; // 儲存被邀請的 UUID
-//   })
-// );
+import User from "../models/testUsersModel"
+
+// 邀請訊息
+const Invite = mongoose.model(
+  "Invite",
+  new mongoose.Schema({
+    from: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    to: { type: mongoose.Schema.Types.ObjectId, required: true },
+    status: { type: String, enum: ["sent", "accepted", "rejected"], default: "sent" },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now }
+  })
+)
+
+// 聊天訊息
+const Chat = mongoose.model(
+  "Chat",
+  new mongoose.Schema({
+    from: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    to: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    content: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now }
+  })
+)
 
 const wss1 = new WebSocket.WebSocketServer({ noServer: true })
 
-wss1.on("connection", function connection (ws) {
+wss1.on("connection", async function connection (ws, req) {
   ws.on("error", console.error)
   console.log("後端ws，3000port 連線成功 ...")
-  const uuid = uuidv4()
 
-  ws.uuid = uuid // 判斷是哪一個用戶使用
+  // 取得用戶資料
+  // const uuid = uuidv4()
+  let uuid = ""
+  let name = ""
+  let photo = ""
+  // 從cookie中取得token ，在同一個瀏覽器要登入塞入cookie
+  function getRawHeaders () {
+    return req.rawHeaders.join("; ")
+  }
+  async function getToken () {
+    try {
+      const headers = await getRawHeaders()
+      const tokenPair = headers.split("; ").find(pair => pair.startsWith("104social_token="))
+      const token = tokenPair ? tokenPair.split("=")[1] : null
 
+      if (token) {
+        const decoded = await jwt.verify(token, process.env.JWT_SECRET)
+        uuid = decoded.id
+        name = decoded.name
+        photo = decoded.photo
+      }
+    } catch (error) {
+      console.error("Failed to get token:", error)
+    }
+  }
+  await getToken()
+
+  // 判斷是哪一個用戶使用
+  ws.uuid = uuid
   // 發出第一個訊息給用戶，表示用戶是誰
   const user = {
     context: "user",
     uuid
   }
-  // 發訊息給用戶
-  ws.send(JSON.stringify(user)) // 只能發送字串
+  // 發訊息給用戶 只能發送字串
+  ws.send(JSON.stringify(user))
 
-  // 監聽
+  // 發送資料庫中歷史訊息
+  const invites = await Invite.find({ to: uuid }).populate("from", "name photo createdAt")
+  invites.forEach(invite => {
+    const inviteMessage = {
+      context: "invite",
+      from: invite.from._id,
+      name: invite.from.name,
+      photo: invite.from.photo,
+      createdAt: invite.createdAt
+    }
+    ws.send(JSON.stringify(inviteMessage))
+  })
+
+  const chats = await Chat.find({ $or: [{ from: uuid }, { to: uuid }] }).populate("from to", "name photo")
+  chats.forEach(chat => {
+    const chatMessage = {
+      context: "message",
+      content: chat.content,
+      uuid: chat.from._id,
+      name: chat.from.name,
+      photo: chat.from.photo,
+      createdAt: chat.createdAt
+    }
+    ws.send(JSON.stringify(chatMessage))
+  })
+
+  // 監聽前端各種傳訊行為
   ws.on("message", async (message) => {
     const msg = JSON.parse(message)
 
     if (msg.context === "invite") {
-      console.log("invite")
-
       const inviteMessage = {
         context: "invite",
         from: uuid,
-        to: msg.to
+        to: msg.to,
+        name,
+        photo,
+        createdAt: new Date()
       }
-
-      // 發送邀請給指定的用戶
+      // 發送邀請給指定的用戶(不能隨意id，前端會判斷是否與本身相符)
       sendToUser(msg.to, inviteMessage)
-      // 寫入資料庫
-      // await new Invite({ from: uuid, to: msg.to }).save();
+
+      // 嘗試查找邀請
+      let invite = await Invite.findOne({ from: uuid, to: msg.to })
+      if (!invite) {
+        invite = new Invite({ from: uuid, to: msg.to, status: "sent", createdAt: new Date() })
+        await invite.save()
+      } else {
+        await Invite.deleteOne({ _id: invite._id })
+      }
     }
 
     if (msg.context === "message") {
-      // console.log('message');
-
       const newMessage = {
         context: "message",
+        content: msg.content,
         uuid,
-        content: msg.content
+        name,
+        photo,
+        createdAt: new Date()
       }
 
       // 直接回傳
       // ws.send(JSON.stringify(newMessage))
-      sendAllUser(newMessage)
+      // sendAllUser(newMessage)
+      sendToUser(msg.to, newMessage, msg.from)
+
+      // 儲存聊天訊息
+      const chat = new Chat({ from: uuid, to: msg.to, content: msg.content })
+      await chat.save()
     }
   })
 })
 
-// 推播大家
+// 推播"大家"
 function sendAllUser (msg) {
   wss1.clients.forEach(function (client) {
-    // 已建立連線：並且排除自身 && client.uuid !== msg.uuid
+    // 已建立連線：並且排除自身 && client.uuid !== msg.uuid  > 不排除自己，因需要顯示自己的訊息
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(msg))
     }
   })
 }
 
-// 推播給特定用戶
-function sendToUser (uuid, msg) {
-  wss1.clients.forEach(function (client) {
+// 推播"特定用戶"
+function sendToUser (uuid: string, msg: any, from: string) {
+  wss1.clients.forEach(function (client: WebSocket) {
     // 已建立連線：並且是指定的用戶
-    if (client.readyState === WebSocket.OPEN && client.uuid === uuid) {
+    if (client.readyState === WebSocket.OPEN && client.uuid === uuid || client.uuid === from) {
       client.send(JSON.stringify(msg))
     }
   })

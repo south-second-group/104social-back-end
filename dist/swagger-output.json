@@ -6,11 +6,11 @@
         "version": "1.0.0"
     },
     "host": [
-        "one04social-back-end.onrender.com"
+        "localhost:3000"
     ],
     "basePath": "/",
     "schemes": [
-        "https"
+        "http"
     ],
     "securityDefinitions": {
         "Bearer": {
@@ -389,12 +389,6 @@
                             "type": "object",
                             "properties": {
                                 "TradeInfo": {
-                                    "example": "any"
-                                },
-                                "TradeNo": {
-                                    "example": "any"
-                                },
-                                "PaymentType": {
                                     "example": "any"
                                 }
                             }

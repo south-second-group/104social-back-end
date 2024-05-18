@@ -58,7 +58,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
 // 產生 JWT token
 const generateSendJWT = (res_1, message_1, user_1, ...args_1) => __awaiter(void 0, [res_1, message_1, user_1, ...args_1], void 0, function* (res, message, user, isThirdPartyLogin = false) {
     const JWT_SECRET = process.env.JWT_SECRET;
-    const token = jsonwebtoken_1.default.sign({ id: user._id }, JWT_SECRET, {
+    const token = jsonwebtoken_1.default.sign({ id: user._id, name: user.name, photo: user.photo }, JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRES_DAY
     });
     user.password = undefined;
