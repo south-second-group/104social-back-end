@@ -4,11 +4,30 @@ import WebSocket from "ws"
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken"
 
-import User from "../models/testUsersModel"
+// import User from "../models/testUsersModel"
 
 interface WebSocketWithUUID extends WebSocket {
   uuid: string
 }
+
+interface Message {
+  context: string
+}
+
+// interface ChatType {
+//   content: string
+//   from: {
+//     _id: mongoose.Types.ObjectId
+//     name: string
+//     photo: string
+//   }
+//   to: {
+//     _id: mongoose.Types.ObjectId
+//     name: string
+//     photo: string
+//   }
+//   createdAt: Date
+// };
 
 // 邀請訊息
 const Invite = mongoose.model(
@@ -35,9 +54,10 @@ const Chat = mongoose.model(
 
 const wss1 = new WebSocket.WebSocketServer({ noServer: true })
 
-wss1.on("connection", async function connection (ws, req) {
+// eslint-disable-next-line
+wss1.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
-  console.log("後端ws，3000port 連線成功 ...")
+  console.warn("後端ws，3000port 連線成功 ...")
 
   // 取得用戶資料
   // const uuid = uuidv4()
@@ -45,22 +65,22 @@ wss1.on("connection", async function connection (ws, req) {
   let name = ""
   let photo = ""
   // 從cookie中取得token ，在同一個瀏覽器要登入塞入cookie
-  function getRawHeaders () {
+  function getRawHeaders (): string {
     return req.rawHeaders.join("; ")
   }
-  async function getToken () {
+  async function getToken (): Promise<void> {
     try {
-      const headers = await getRawHeaders()
+      const headers = getRawHeaders()
       const tokenPair = headers.split("; ").find(pair => pair.startsWith("104social_token="))
-      const token = tokenPair ? tokenPair.split("=")[1] : null
+      const token = tokenPair !== undefined ? tokenPair.split("=")[1] : null
 
-      if (token) {
-        if (!process.env.JWT_SECRET) {
+      if (token !== null) {
+        if (process.env.JWT_SECRET === null || process.env.JWT_SECRET === undefined) {
           console.error("JWT_SECRET is not set")
           return
         }
 
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
         if (typeof decoded === "object" && "id" in decoded && "name" in decoded && "photo" in decoded) {
           uuid = decoded.id
           name = decoded.name
@@ -81,13 +101,15 @@ wss1.on("connection", async function connection (ws, req) {
   // 發出第一個訊息給用戶，表示用戶是誰
   const user = {
     context: "user",
-    uuid
+    uuid,
+    name
   }
   // 發訊息給用戶 只能發送字串
   ws.send(JSON.stringify(user))
 
   // 發送資料庫中歷史訊息
   const invites = await Invite.find({ to: uuid }).populate({ path: "from", select: "name photo" })
+  // eslint-disable-next-line
   invites.forEach((invite: any) => {
     const inviteMessage = {
       context: "invite",
@@ -100,6 +122,7 @@ wss1.on("connection", async function connection (ws, req) {
   })
 
   const chats = await Chat.find({ $or: [{ from: uuid }, { to: uuid }] }).populate({ path: "from", select: "name photo" }).populate({ path: "to", select: "name photo" })
+  // eslint-disable-next-line
   chats.forEach((chat: any) => {
     const chatMessage = {
       context: "message",
@@ -113,7 +136,8 @@ wss1.on("connection", async function connection (ws, req) {
   })
 
   // 監聽前端各種傳訊行為
-  ws.on("message", async (message: string) => {
+  // eslint-disable-next-line
+  ws.on("message", async (message: string): Promise<void> => {
     const msg = JSON.parse(message)
 
     if (msg.context === "invite") {
@@ -126,15 +150,17 @@ wss1.on("connection", async function connection (ws, req) {
         createdAt: new Date()
       }
       // 發送邀請給指定的用戶(不能隨意id，前端會判斷是否與本身相符)
-      sendToUser(msg.to, inviteMessage, msg.from)
+      sendToUser(String(msg.to), inviteMessage, String(msg.from))
 
       // 嘗試查找邀請
       let invite = await Invite.findOne({ from: uuid, to: msg.to })
-      if (!invite) {
+      if (invite === null) {
         invite = new Invite({ from: uuid, to: msg.to, status: "sent", createdAt: new Date() })
         await invite.save()
+        return
       } else {
         await Invite.deleteOne({ _id: invite._id })
+        return
       }
     }
 
@@ -148,10 +174,10 @@ wss1.on("connection", async function connection (ws, req) {
         createdAt: new Date()
       }
 
-      // 直接回傳
+      // 不處理直接回傳
       // ws.send(JSON.stringify(newMessage))
       // sendAllUser(newMessage)
-      sendToUser(msg.to, newMessage, msg.from)
+      sendToUser(String(msg.to), newMessage, String(msg.from))
 
       // 儲存聊天訊息
       const chat = new Chat({ from: uuid, to: msg.to, content: msg.content })
@@ -160,8 +186,9 @@ wss1.on("connection", async function connection (ws, req) {
   })
 })
 
-// 推播"大家"
-function sendAllUser (msg: any) {
+// 推播"大家" 暫無使用
+// eslint-disable-next-line
+function sendAllUser (msg: Message): void {
   wss1.clients.forEach(function (client: WebSocket) {
     // 已建立連線：並且排除自身 && client.uuid !== msg.uuid  > 不排除自己，因需要顯示自己的訊息
     if (client.readyState === WebSocket.OPEN) {
@@ -171,7 +198,7 @@ function sendAllUser (msg: any) {
 }
 
 // 推播"特定用戶"
-function sendToUser (uuid: string, msg: any, from: string) {
+function sendToUser (uuid: string, msg: Message, from: string): void {
   (wss1.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
     // 已建立連線：並且是指定的用戶
     if (client.readyState === WebSocket.OPEN && (client.uuid === uuid || client.uuid === from)) {

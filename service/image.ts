@@ -18,7 +18,7 @@
 
 import multer from "multer"
 import path from "path"
-import { type ExtendedError } from "../types/ExtendedError"
+// import { type ExtendedError } from "../types/ExtendedError"
 
 const upload = multer({
   limits: {

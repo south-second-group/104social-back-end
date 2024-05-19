@@ -8,8 +8,8 @@ import app from "../app"
 import debugModule from "debug"
 import http from "http"
 import wss1 from "../service/ws"
-import { parse } from "url"
 import { type WebSocket as WSWebSocket } from "ws"
+import { URL } from "url"
 const debug = debugModule("104social:server")
 
 /**
@@ -26,7 +26,7 @@ app.set("port", port)
 const server = http.createServer(app)
 
 server.on("upgrade", function upgrade (request, socket, head) {
-  const { pathname = "" } = parse(request.url || "")
+  const { pathname = "" } = new URL(request.url ?? "", "http://localhost")
 
   if (pathname === "/ws") {
     wss1.handleUpgrade(request, socket, head, function done (ws: WSWebSocket) {

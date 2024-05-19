@@ -24,7 +24,8 @@ app_1.default.set("port", port);
  */
 const server = http_1.default.createServer(app_1.default);
 server.on("upgrade", function upgrade(request, socket, head) {
-    const { pathname = "" } = (0, url_1.parse)(request.url || "");
+    var _a;
+    const { pathname = "" } = new url_1.URL((_a = request.url) !== null && _a !== void 0 ? _a : "", "http://localhost");
     if (pathname === "/ws") {
         ws_1.default.handleUpgrade(request, socket, head, function done(ws) {
             ws_1.default.emit("connection", ws, request);
