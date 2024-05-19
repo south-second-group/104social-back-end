@@ -6,6 +6,10 @@ import jwt from "jsonwebtoken"
 
 import User from "../models/testUsersModel"
 
+interface WebSocketWithUUID extends WebSocket {
+  uuid: string
+}
+
 // 邀請訊息
 const Invite = mongoose.model(
   "Invite",
@@ -51,10 +55,19 @@ wss1.on("connection", async function connection (ws, req) {
       const token = tokenPair ? tokenPair.split("=")[1] : null
 
       if (token) {
+        if (!process.env.JWT_SECRET) {
+          console.error("JWT_SECRET is not set")
+          return
+        }
+
         const decoded = await jwt.verify(token, process.env.JWT_SECRET)
-        uuid = decoded.id
-        name = decoded.name
-        photo = decoded.photo
+        if (typeof decoded === "object" && "id" in decoded && "name" in decoded && "photo" in decoded) {
+          uuid = decoded.id
+          name = decoded.name
+          photo = decoded.photo
+        } else {
+          console.error("Invalid token payload")
+        }
       }
     } catch (error) {
       console.error("Failed to get token:", error)
@@ -63,7 +76,8 @@ wss1.on("connection", async function connection (ws, req) {
   await getToken()
 
   // 判斷是哪一個用戶使用
-  ws.uuid = uuid
+  const wsWithUUID = ws as WebSocketWithUUID
+  wsWithUUID.uuid = uuid
   // 發出第一個訊息給用戶，表示用戶是誰
   const user = {
     context: "user",
@@ -73,8 +87,8 @@ wss1.on("connection", async function connection (ws, req) {
   ws.send(JSON.stringify(user))
 
   // 發送資料庫中歷史訊息
-  const invites = await Invite.find({ to: uuid }).populate("from", "name photo createdAt")
-  invites.forEach(invite => {
+  const invites = await Invite.find({ to: uuid }).populate({ path: "from", select: "name photo" })
+  invites.forEach((invite: any) => {
     const inviteMessage = {
       context: "invite",
       from: invite.from._id,
@@ -85,8 +99,8 @@ wss1.on("connection", async function connection (ws, req) {
     ws.send(JSON.stringify(inviteMessage))
   })
 
-  const chats = await Chat.find({ $or: [{ from: uuid }, { to: uuid }] }).populate("from to", "name photo")
-  chats.forEach(chat => {
+  const chats = await Chat.find({ $or: [{ from: uuid }, { to: uuid }] }).populate({ path: "from", select: "name photo" }).populate({ path: "to", select: "name photo" })
+  chats.forEach((chat: any) => {
     const chatMessage = {
       context: "message",
       content: chat.content,
@@ -99,7 +113,7 @@ wss1.on("connection", async function connection (ws, req) {
   })
 
   // 監聽前端各種傳訊行為
-  ws.on("message", async (message) => {
+  ws.on("message", async (message: string) => {
     const msg = JSON.parse(message)
 
     if (msg.context === "invite") {
@@ -112,7 +126,7 @@ wss1.on("connection", async function connection (ws, req) {
         createdAt: new Date()
       }
       // 發送邀請給指定的用戶(不能隨意id，前端會判斷是否與本身相符)
-      sendToUser(msg.to, inviteMessage)
+      sendToUser(msg.to, inviteMessage, msg.from)
 
       // 嘗試查找邀請
       let invite = await Invite.findOne({ from: uuid, to: msg.to })
@@ -147,8 +161,8 @@ wss1.on("connection", async function connection (ws, req) {
 })
 
 // 推播"大家"
-function sendAllUser (msg) {
-  wss1.clients.forEach(function (client) {
+function sendAllUser (msg: any) {
+  wss1.clients.forEach(function (client: WebSocket) {
     // 已建立連線：並且排除自身 && client.uuid !== msg.uuid  > 不排除自己，因需要顯示自己的訊息
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(msg))
@@ -158,12 +172,12 @@ function sendAllUser (msg) {
 
 // 推播"特定用戶"
 function sendToUser (uuid: string, msg: any, from: string) {
-  wss1.clients.forEach(function (client: WebSocket) {
+  (wss1.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
     // 已建立連線：並且是指定的用戶
-    if (client.readyState === WebSocket.OPEN && client.uuid === uuid || client.uuid === from) {
+    if (client.readyState === WebSocket.OPEN && (client.uuid === uuid || client.uuid === from)) {
       client.send(JSON.stringify(msg))
     }
   })
 }
 
-module.exports = wss1
+export default wss1

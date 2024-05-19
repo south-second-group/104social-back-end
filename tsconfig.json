@@ -7,6 +7,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
   },
-  "include": ["**/*.ts", "service/ws.ts"],
+  "include": ["**/*.ts", "service/ws.ts", "temp.js"],
   "exclude": ["node_modules"]
 }

@@ -9,7 +9,9 @@ import debugModule from "debug"
 import http from "http"
 import wss1 from "../service/ws"
 import { parse } from "url"
+import { type WebSocket as WSWebSocket } from "ws"
 const debug = debugModule("104social:server")
+
 /**
  * Get port from environment and store in Express.
  */
@@ -24,10 +26,10 @@ app.set("port", port)
 const server = http.createServer(app)
 
 server.on("upgrade", function upgrade (request, socket, head) {
-  const { pathname } = parse(request.url)
+  const { pathname = "" } = parse(request.url || "")
 
   if (pathname === "/ws") {
-    wss1.handleUpgrade(request, socket, head, function done (ws) {
+    wss1.handleUpgrade(request, socket, head, function done (ws: WSWebSocket) {
       wss1.emit("connection", ws, request)
     })
   } else {
