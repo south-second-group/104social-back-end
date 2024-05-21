@@ -1,5 +1,4 @@
 // import { v4 as uuidv4 } from "uuid"
-// import cookieParser from 'cookie-parser'
 import WebSocket from "ws"
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken"
@@ -29,7 +28,6 @@ interface Message {
 //   createdAt: Date
 // };
 
-// 邀請訊息
 const Invite = mongoose.model(
   "Invite",
   new mongoose.Schema({
@@ -41,7 +39,6 @@ const Invite = mongoose.model(
   })
 )
 
-// 聊天訊息
 const Chat = mongoose.model(
   "Chat",
   new mongoose.Schema({
@@ -57,22 +54,18 @@ const wss1 = new WebSocket.WebSocketServer({ noServer: true })
 // eslint-disable-next-line
 wss1.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
-  console.warn("後端ws，3000port 連線成功 ...")
+  console.warn("後端 WS，連線成功 ...")
 
   // 取得用戶資料
   // const uuid = uuidv4()
   let uuid = ""
   let name = ""
   let photo = ""
-  // 從cookie中取得token ，在同一個瀏覽器要登入塞入cookie
-  function getRawHeaders (): string {
-    return req.rawHeaders.join("; ")
-  }
+
   async function getToken (): Promise<void> {
     try {
-      const headers = getRawHeaders()
-      const tokenPair = headers.split("; ").find(pair => pair.startsWith("104social_token="))
-      const token = tokenPair !== undefined ? tokenPair.split("=")[1] : null
+      const url = typeof req.url === "string" && req.url.trim() !== "" ? new URL(req.url, `http://${req.headers.host}`) : null
+      const token = url !== null ? url.searchParams.get("token") : null
 
       if (token !== null) {
         if (process.env.JWT_SECRET === null || process.env.JWT_SECRET === undefined) {
