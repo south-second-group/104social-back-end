@@ -1,14 +1,16 @@
 import swaggerAutogen from "swagger-autogen"
 import testUser from "./models/testUsersModel"
+import dotenv from "dotenv"
+
+dotenv.config({ path: "./.env" })
 
 const doc = {
   info: {
     title: "104social",
     description: "A social networking website for connecting people."
   },
-  host: ["one04social-back-end.onrender.com"], // 正式機 one04social-back-end.onrender.com  / 本地 localhost:3000
-  // host: ["localhost:3000"],
-  schemes: ["https"], // 正式機 https / 本地 http
+  host: [process.env.PORT ? `localhost:${process.env.PORT}` :"one04social-back-end.onrender.com"],
+  schemes: ["http","https"], // 正式機 https / 本地 http
   securityDefinitions: {
     Bearer: {
       type: "apiKey",

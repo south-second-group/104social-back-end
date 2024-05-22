@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "104social",
+    "title": "undefined",
     "description": "A social networking website for connecting people.",
     "version": "1.0.0"
   },
@@ -10,6 +10,7 @@
   ],
   "basePath": "/",
   "schemes": [
+    "http",
     "https"
   ],
   "securityDefinitions": {
