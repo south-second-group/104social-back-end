@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Chat Interface</title>
+  <link rel="stylesheet" href="https://content.nlkit.com/nlux/themes/nova.css" />
+</head>
+
+<body>
+  <div id="chat-container"></div>
+  <script>
+    document.addEventListener( 'DOMContentLoaded', () => {
+      const chatContainer = document.getElementById( 'chat-container' );
+
+      if ( chatContainer ) {
+        // Create a script element dynamically
+        const script = document.createElement( 'script' );
+        script.textContent = `
+        ${aiChat.mount( chatContainer )}
+      `;
+        document.body.appendChild( script );
+      }
+    } );
+  </script>
+</body>
+
+</html>

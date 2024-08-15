@@ -17,6 +17,10 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^7.10.0",
+    "@nlbridge/express": "^0.3.10",
+    "@nlux/core": "^2.3.8",
+    "@nlux/nlbridge": "^2.3.8",
+    "@nlux/themes": "^2.3.8",
     "@types/express-serve-static-core": "^4.19.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",

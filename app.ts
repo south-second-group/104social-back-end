@@ -11,6 +11,7 @@ import dotenv from "dotenv"
 import swaggerUI from "swagger-ui-express"
 import passport from "passport"
 import session from "express-session"
+import { defaultMiddleware } from "@nlbridge/express"
 
 import swaggerFile from "./swagger-output.json"
 import { errorHandler } from "./service/handler"
@@ -20,6 +21,10 @@ import uploadRouter from "./routes/upload"
 import authRouter from "./routes/auth"
 import setupPassport from "./service/passport"
 import payment from "./routes/payment"
+
+// 聊天機器人
+import { createAiChat } from "@nlux/core"
+import { createChatAdapter } from "@nlux/nlbridge"
 
 const app = express()
 dotenv.config({ path: "./.env" })
@@ -64,6 +69,24 @@ app.use("/auth", authRouter)
 app.use("/payment", payment)
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
+// import '@nlux/themes/nova.css';
+
+app.post("/chat-api",
+  defaultMiddleware("openai", {
+    apiKey: process.env.YOUR_OPENAI_API_KEY,
+    chatModel: "gpt-3.5-turbo"
+  })
+)
+
+const nlbridgeAdapter = createChatAdapter()
+  .withUrl("http://localhost:3000/chat-api")
+const aiChat = createAiChat().withAdapter(nlbridgeAdapter)
+
+app.get("/chat", (req, res) => {
+  res.render("chat", {
+    aiChat
+  })
+})
 
 // 404 錯誤
 app.use((req: Request, res: Response, _next: NextFunction) => {
