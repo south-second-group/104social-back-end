@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "undefined",
+    "title": "104social",
     "description": "A social networking website for connecting people.",
     "version": "1.0.0"
   },
@@ -10,7 +10,6 @@
   ],
   "basePath": "/",
   "schemes": [
-    "http",
     "https"
   ],
   "securityDefinitions": {
@@ -22,6 +21,26 @@
     }
   },
   "paths": {
+    "/chat-api": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/chat": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/test/v1/user/register": {
       "post": {
         "tags": [
@@ -48,10 +67,6 @@
                 "gender": {
                   "type": "string",
                   "example": "secret"
-                },
-                "photo": {
-                  "type": "string",
-                  "example": "xxx.jpg"
                 },
                 "password": {
                   "type": "string",
@@ -244,13 +259,13 @@
             "schema": {
               "type": "object",
               "properties": {
+                "onlineStatus": {
+                  "type": "string",
+                  "example": "online"
+                },
                 "name": {
                   "type": "string",
-                  "example": "william44"
-                },
-                "photo": {
-                  "type": "string",
-                  "example": "222"
+                  "example": "william05"
                 },
                 "gender": {
                   "type": "string",
@@ -258,8 +273,8 @@
                 }
               },
               "required": [
+                "onlineStatus",
                 "name",
-                "photo",
                 "gender"
               ]
             }
@@ -415,6 +430,15 @@
         "properties": {
           "type": "object",
           "properties": {
+            "onlineStatus": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
             "name": {
               "type": "object",
               "properties": {

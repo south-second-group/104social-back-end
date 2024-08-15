@@ -21,7 +21,7 @@ declare module "express-serve-static-core" {
 const users = {
   register: handleErrorAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-      let { name, email, photo, gender, password, confirmPassword } = req.body
+      let { name, email, gender, password, confirmPassword } = req.body
 
       if (typeof name !== "string" || name === "" ||
     typeof email !== "string" || email === "" ||
@@ -69,7 +69,7 @@ const users = {
 
       // 建立新使用者
       password = await bcrypt.hash(password, 11)
-      const data = { name, email, password, photo, gender }
+      const data = { name, email, password, gender }
       await User.create(data)
 
       successHandler(res, "註冊成功，請重新登入", {}, 201)
@@ -106,8 +106,8 @@ const users = {
     }
   ),
   patchProfile: handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { name, photo, gender } = req.body
-    const data = { name, photo, gender }
+    const { onlineStatus, name, gender } = req.body
+    const data = { onlineStatus, name, gender }
 
     if (name === "") {
       appError("名稱必填", 400, next); return

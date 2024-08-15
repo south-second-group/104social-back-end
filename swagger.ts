@@ -9,8 +9,8 @@ const doc = {
     title: "104social",
     description: "A social networking website for connecting people."
   },
-  host: [process.env.PORT ? `localhost:${process.env.PORT}` :"one04social-back-end.onrender.com"],
-  schemes: ["http","https"], // 正式機 https / 本地 http
+  host: [process.env.PORT ? `localhost:${process.env.PORT}` : "one04social-back-end.onrender.com"],
+  schemes: [process.env.PORT ? "http" : "https"], // ["http", "https"], // 正式機 https / 本地 http
   securityDefinitions: {
     Bearer: {
       type: "apiKey",

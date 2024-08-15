@@ -2,6 +2,14 @@ import mongoose from "mongoose"
 
 const userSchema = new mongoose.Schema(
   {
+    onlineStatus: {
+      type: String,
+      default: "offline",
+      enum: {
+        values: ["online", "offline", "busy"],
+        message: "狀態格式不正確"
+      }
+    },
     name: {
       type: String,
       required: [true, "請輸入您的名字"]
@@ -13,7 +21,10 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       select: false
     },
-    photo: String,
+    photo: {
+      type: String,
+      default: "https://firebasestorage.googleapis.com/v0/b/social-back-end.appspot.com/o/images%2FdefaultAvatar.png?alt=media&token=0552f8e8-de22-4037-8665-417639ee994e"
+    },
     gender: {
       type: String,
       required: [true, "請選擇您的性別"],

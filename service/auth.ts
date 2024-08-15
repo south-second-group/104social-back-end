@@ -47,6 +47,7 @@ export const checkAuth = handleErrorAsync(
       }
       req.user = {
         _id: currentUser._id.toString(),
+        onlineStatus: currentUser.onlineStatus,
         name: currentUser.name,
         gender: currentUser.gender ?? "secret",
         photo: currentUser.photo ?? "",
@@ -77,6 +78,7 @@ export const generateSendJWT = async (
     token,
     profile: {
       _id: user._id,
+      onlineStatus: user.onlineStatus,
       name: user.name,
       gender: user.gender,
       photo: user.photo

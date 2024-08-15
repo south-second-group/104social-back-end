@@ -29,7 +29,6 @@ router.post(
                 "name": "william01",
                 "email": "william01@gmail.com",
                 "gender": "secret",
-                "photo":"xxx.jpg",
                 "password": "a11111111",
                 "confirmPassword": "a11111111"
                 }
@@ -124,8 +123,8 @@ router.patch("/profile", checkAuth,
             required: true,
             description: '資料格式',
             schema: {
-                $name: 'william44',
-                $photo: '222',
+                $onlineStatus: 'online',
+                $name: 'william05',
                 $gender: 'secret'
             }
         }
