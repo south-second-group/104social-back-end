@@ -10,6 +10,10 @@ const userSchema = new mongoose.Schema(
         message: "狀態格式不正確"
       }
     },
+    messageBoard: {
+      type: String,
+      default: "歡迎來到我的留言板"
+    },
     name: {
       type: String,
       required: [true, "請輸入您的名字"]

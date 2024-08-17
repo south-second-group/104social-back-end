@@ -63,7 +63,7 @@ const users = {
       // 檢查 email 是否已註冊
       const findUserByMail = await User.findOne({ email })
       if (findUserByMail !== null) {
-        appError("email 已註冊", 400, next)
+        appError("email信箱 已註冊", 400, next)
         return
       }
 
@@ -102,7 +102,8 @@ const users = {
   ),
   getOwnProfile: handleErrorAsync(
     async (req: Request, res: Response, _next: NextFunction) => {
-      successHandler(res, "取得成功", req.user)
+      const result = await User.findById(req.user?._id)
+      successHandler(res, "取得成功", result?.toObject())
     }
   ),
   patchProfile: handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {

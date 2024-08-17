@@ -16,7 +16,7 @@ declare module "express-serve-static-core" {
 
 // 檢查 token 是否存在
 export const checkAuth = handleErrorAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     const JWT_SECRET = process.env.JWT_SECRET as Secret
     let token: string | undefined
     const auth = req.headers.authorization
