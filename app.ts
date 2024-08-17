@@ -71,12 +71,14 @@ app.use("/payment", payment)
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 // import '@nlux/themes/nova.css';
 
-app.post("/chat-api",
-  defaultMiddleware("openai", {
+app.post("/chat-api", (req, res, next) => {
+  const middleware = defaultMiddleware("openai", {
     apiKey: process.env.YOUR_OPENAI_API_KEY,
     chatModel: "gpt-3.5-turbo"
   })
-)
+  // 確保 middleware 是同步執行的
+  Promise.resolve(middleware(req, res, next)).catch(next)
+})
 
 const nlbridgeAdapter = createChatAdapter()
   .withUrl("http://localhost:3000/chat-api")
@@ -90,7 +92,7 @@ app.get("/chat", (req, res) => {
 
 // 404 錯誤
 app.use((req: Request, res: Response, _next: NextFunction) => {
-  errorHandler(res, "無此網站路由", 404, "error")
+  errorHandler(res, "無此網站路由", 404)
 })
 
 // production 環境錯誤
@@ -99,29 +101,26 @@ const resErrorProd = (error: ExtendedError, res: Response): void => {
   if (error.isOperational ?? false) {
     errorHandler(res, error.message ?? "", error.statusCode)
   } else {
-    errorHandler(res, "產品環境系統異常，請洽系統管理員", 500, "error")
+    errorHandler(res, "產品環境系統異常，請洽系統管理員", 500)
   }
 }
 
 //  develop 環境錯誤
-function resErrorDev (res: Response, err: ExtendedError): void {
+function resErrorDev (err: ExtendedError, res: Response): void {
   console.error("開發環境錯誤", err)
   const statusCode = err.statusCode ?? 500
-  const statusText = err ?? "開發環境錯誤"
+  const statusText = err.message ?? "開發環境錯誤"
+  const stack = err.stack ?? ""
 
-  res.status(statusCode).json({
-    status: "error",
-    message: statusText,
-    stack: err.stack
-  })
+  errorHandler(res, statusText, statusCode, stack)
 }
 
 // 自訂錯誤處理，依照環境不同，回傳不同錯誤訊息
 app.use(
-  (error: ExtendedError, req: Request, res: Response, _next: NextFunction) => {
+  (error: ExtendedError, _req: Request, res: Response, _next: NextFunction) => {
     // dev
     if (process.env.NODE_ENV === "develop") {
-      resErrorDev(res, error)
+      resErrorDev(error, res)
       return
     }
 
