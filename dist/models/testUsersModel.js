@@ -5,6 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const userSchema = new mongoose_1.default.Schema({
+    googleId: String,
+    lineUserId: String,
     name: {
         type: String,
         required: [true, "請輸入您的名字"]
@@ -16,7 +18,10 @@ const userSchema = new mongoose_1.default.Schema({
         lowercase: true,
         select: false
     },
-    photo: String,
+    photo: {
+        type: String,
+        default: "https://firebasestorage.googleapis.com/v0/b/social-back-end.appspot.com/o/images%2FdefaultAvatar.png?alt=media&token=0552f8e8-de22-4037-8665-417639ee994e"
+    },
     gender: {
         type: String,
         required: [true, "請選擇您的性別"],
@@ -31,11 +36,26 @@ const userSchema = new mongoose_1.default.Schema({
         minlength: 8,
         select: false
     },
+    onlineStatus: {
+        type: String,
+        default: "offline",
+        enum: {
+            values: ["online", "offline", "busy"],
+            message: "狀態格式不正確"
+        }
+    },
+    messageBoard: {
+        type: String,
+        default: "歡迎來到我的留言板"
+    },
+    friendList: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "FriendList"
+    },
     createdAt: {
         type: Date,
         default: Date.now
-    },
-    googleId: String
+    }
 }, {
     versionKey: false
 });

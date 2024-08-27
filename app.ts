@@ -21,10 +21,11 @@ import uploadRouter from "./routes/upload"
 import authRouter from "./routes/auth"
 import setupPassport from "./service/passport"
 import payment from "./routes/payment"
+import friendListRouter from "./routes/friendList"
 
 // 聊天機器人
-import { createAiChat } from "@nlux/core"
-import { createChatAdapter } from "@nlux/nlbridge"
+// import { createAiChat } from "@nlux/core"
+// import { createChatAdapter } from "@nlux/nlbridge"
 
 const app = express()
 dotenv.config({ path: "./.env" })
@@ -67,6 +68,7 @@ app.use("/api/test/v1/user", testUsersRouter)
 app.use("/upload", uploadRouter)
 app.use("/auth", authRouter)
 app.use("/payment", payment)
+app.use("/api/v1/friendList", friendListRouter)
 
 app.use("/api-doc", swaggerUI.serve, swaggerUI.setup(swaggerFile))
 // import '@nlux/themes/nova.css';
@@ -80,15 +82,15 @@ app.post("/chat-api", (req, res, next) => {
   Promise.resolve(middleware(req, res, next)).catch(next)
 })
 
-const nlbridgeAdapter = createChatAdapter()
-  .withUrl("http://localhost:3000/chat-api")
-const aiChat = createAiChat().withAdapter(nlbridgeAdapter)
+// const nlbridgeAdapter = createChatAdapter()
+//   .withUrl("http://localhost:3000/chat-api")
+// const aiChat = createAiChat().withAdapter(nlbridgeAdapter)
 
-app.get("/chat", (req, res) => {
-  res.render("chat", {
-    aiChat
-  })
-})
+// app.get("/chat", (req, res) => {
+//   res.render("chat", {
+//     aiChat
+//   })
+// })
 
 // 404 錯誤
 app.use((req: Request, res: Response, _next: NextFunction) => {

@@ -5,14 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const swagger_autogen_1 = __importDefault(require("swagger-autogen"));
 const testUsersModel_1 = __importDefault(require("./models/testUsersModel"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config({ path: "./.env" });
 const doc = {
     info: {
         title: "104social",
         description: "A social networking website for connecting people."
     },
-    host: ["one04social-back-end.onrender.com"], // 正式機 one04social-back-end.onrender.com  / 本地 localhost:3000
-    // host: ["localhost:3000"],
-    schemes: ["http"], // 正式機 https / 本地 http
+    host: [process.env.PORT ? `localhost:${process.env.PORT}` : "one04social-back-end.onrender.com"],
+    schemes: [process.env.PORT ? "http" : "https"], // ["http", "https"], // 正式機 https / 本地 http
     securityDefinitions: {
         Bearer: {
             type: "apiKey",

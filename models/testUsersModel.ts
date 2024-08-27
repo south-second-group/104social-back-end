@@ -2,18 +2,8 @@ import mongoose from "mongoose"
 
 const userSchema = new mongoose.Schema(
   {
-    onlineStatus: {
-      type: String,
-      default: "offline",
-      enum: {
-        values: ["online", "offline", "busy"],
-        message: "狀態格式不正確"
-      }
-    },
-    messageBoard: {
-      type: String,
-      default: "歡迎來到我的留言板"
-    },
+    googleId: String,
+    lineUserId: String,
     name: {
       type: String,
       required: [true, "請輸入您的名字"]
@@ -43,12 +33,26 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false
     },
+    onlineStatus: {
+      type: String,
+      default: "offline",
+      enum: {
+        values: ["online", "offline", "busy"],
+        message: "狀態格式不正確"
+      }
+    },
+    messageBoard: {
+      type: String,
+      default: "歡迎來到我的留言板"
+    },
+    friendList: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "FriendList"
+    },
     createdAt: {
       type: Date,
       default: Date.now
-    },
-    googleId: String,
-    lineUserId: String
+    }
   },
   {
     versionKey: false

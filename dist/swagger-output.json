@@ -6,7 +6,7 @@
         "version": "1.0.0"
     },
     "host": [
-        "localhost:3000"
+        "localhost:3001"
     ],
     "basePath": "/",
     "schemes": [
@@ -21,6 +21,16 @@
         }
     },
     "paths": {
+        "/chat-api": {
+            "post": {
+                "description": "",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
         "/api/test/v1/user/register": {
             "post": {
                 "tags": [
@@ -47,10 +57,6 @@
                                 "gender": {
                                     "type": "string",
                                     "example": "secret"
-                                },
-                                "photo": {
-                                    "type": "string",
-                                    "example": "xxx.jpg"
                                 },
                                 "password": {
                                     "type": "string",
@@ -243,13 +249,13 @@
                         "schema": {
                             "type": "object",
                             "properties": {
+                                "onlineStatus": {
+                                    "type": "string",
+                                    "example": "online"
+                                },
                                 "name": {
                                     "type": "string",
-                                    "example": "william44"
-                                },
-                                "photo": {
-                                    "type": "string",
-                                    "example": "222"
+                                    "example": "william05"
                                 },
                                 "gender": {
                                     "type": "string",
@@ -257,8 +263,8 @@
                                 }
                             },
                             "required": [
+                                "onlineStatus",
                                 "name",
-                                "photo",
                                 "gender"
                             ]
                         }
@@ -326,6 +332,74 @@
                     },
                     "500": {
                         "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/auth/lineLogin": {
+            "post": {
+                "tags": [
+                    "line"
+                ],
+                "description": "line 登入",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "description": "資料格式",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "lineUserId": {
+                                    "type": "string",
+                                    "example": "fnuwe242352on52j3n"
+                                },
+                                "lineDisplayName": {
+                                    "type": "string",
+                                    "example": "test"
+                                },
+                                "linePictureUrl": {
+                                    "type": "string",
+                                    "example": "11111111"
+                                },
+                                "statusMessage": {
+                                    "type": "string",
+                                    "example": "test"
+                                }
+                            },
+                            "required": [
+                                "lineUserId",
+                                "lineDisplayName",
+                                "linePictureUrl",
+                                "statusMessage"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登入資訊",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "status": {
+                                    "type": "string",
+                                    "example": "success"
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "登入成功"
+                                },
+                                "data": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            },
+                            "xml": {
+                                "name": "main"
+                            }
+                        }
                     }
                 }
             }
@@ -401,6 +475,61 @@
                     }
                 }
             }
+        },
+        "/api/v1/friendList/add/{friendId}": {
+            "post": {
+                "tags": [
+                    "friend list"
+                ],
+                "description": "新增好友",
+                "parameters": [
+                    {
+                        "name": "friendId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/friendList/remove/{friendId}": {
+            "delete": {
+                "tags": [
+                    "friend list"
+                ],
+                "description": "刪除好友",
+                "parameters": [
+                    {
+                        "name": "friendId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/friendList/": {
+            "get": {
+                "tags": [
+                    "friend list"
+                ],
+                "description": "取得好友列表",
+                "responses": {
+                    "default": {
+                        "description": ""
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -414,6 +543,24 @@
                 "properties": {
                     "type": "object",
                     "properties": {
+                        "googleId": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "lineUserId": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
                         "name": {
                             "type": "object",
                             "properties": {
@@ -459,21 +606,39 @@
                                 }
                             }
                         },
+                        "onlineStatus": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "messageBoard": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "string"
+                                }
+                            }
+                        },
+                        "friendList": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "example": "objectid"
+                                }
+                            }
+                        },
                         "createdAt": {
                             "type": "object",
                             "properties": {
                                 "type": {
                                     "type": "string",
                                     "example": "date"
-                                }
-                            }
-                        },
-                        "googleId": {
-                            "type": "object",
-                            "properties": {
-                                "type": {
-                                    "type": "string",
-                                    "example": "string"
                                 }
                             }
                         },

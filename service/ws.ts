@@ -28,6 +28,11 @@ interface Message {
 //   createdAt: Date
 // };
 
+/**
+*
+*   模組設定
+*
+*/
 const Invite = mongoose.model(
   "Invite",
   new mongoose.Schema({
@@ -51,6 +56,11 @@ const Chat = mongoose.model(
 
 const wss1 = new WebSocket.WebSocketServer({ noServer: true })
 
+/**
+*
+*   連線設定
+*
+*/
 // eslint-disable-next-line
 wss1.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
@@ -91,6 +101,7 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
   // 判斷是哪一個用戶使用
   const wsWithUUID = ws as WebSocketWithUUID
   wsWithUUID.uuid = uuid
+
   // 發出第一個訊息給用戶，表示用戶是誰
   const user = {
     context: "user",
@@ -133,6 +144,7 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("message", async (message: string): Promise<void> => {
     const msg = JSON.parse(message)
 
+    // 邀請行為
     if (msg.context === "invite") {
       const inviteMessage = {
         context: "invite",
@@ -157,6 +169,7 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
       }
     }
 
+    // 訊息行為
     if (msg.context === "message") {
       const newMessage = {
         context: "message",
@@ -178,6 +191,12 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
     }
   })
 })
+
+/**
+*
+*   相關函式
+*
+*/
 
 // 推播"大家" 暫無使用
 // eslint-disable-next-line

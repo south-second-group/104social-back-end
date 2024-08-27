@@ -23,7 +23,7 @@ const testUsersModel_1 = __importDefault(require("../models/testUsersModel"));
 dotenv_1.default.config({ path: "./config.env" });
 const users = {
     register: (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        let { name, email, photo, gender, password, confirmPassword } = req.body;
+        let { name, email, gender, password, confirmPassword } = req.body;
         if (typeof name !== "string" || name === "" ||
             typeof email !== "string" || email === "" ||
             typeof password !== "string" || password === "" ||
@@ -59,12 +59,12 @@ const users = {
         // 檢查 email 是否已註冊
         const findUserByMail = yield testUsersModel_1.default.findOne({ email });
         if (findUserByMail !== null) {
-            (0, appError_1.default)("email 已註冊", 400, next);
+            (0, appError_1.default)("email信箱 已註冊", 400, next);
             return;
         }
         // 建立新使用者
         password = yield bcryptjs_1.default.hash(password, 11);
-        const data = { name, email, password, photo, gender };
+        const data = { name, email, password, gender };
         yield testUsersModel_1.default.create(data);
         (0, handler_1.successHandler)(res, "註冊成功，請重新登入", {}, 201);
     })),
@@ -91,17 +91,19 @@ const users = {
         yield (0, auth_1.generateSendJWT)(res, "登入成功", user.toObject());
     })),
     getOwnProfile: (0, handleErrorAsync_1.default)((req, res, _next) => __awaiter(void 0, void 0, void 0, function* () {
-        (0, handler_1.successHandler)(res, "取得成功", req.user);
+        var _a;
+        const result = yield testUsersModel_1.default.findById((_a = req.user) === null || _a === void 0 ? void 0 : _a._id);
+        (0, handler_1.successHandler)(res, "取得成功", result === null || result === void 0 ? void 0 : result.toObject());
     })),
     patchProfile: (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
-        const { name, photo, gender } = req.body;
-        const data = { name, photo, gender };
+        var _b;
+        const { onlineStatus, name, gender } = req.body;
+        const data = { onlineStatus, name, gender };
         if (name === "") {
             (0, appError_1.default)("名稱必填", 400, next);
             return;
         }
-        if (((_a = req.user) === null || _a === void 0 ? void 0 : _a._id) !== undefined && req.user._id !== null) {
+        if (((_b = req.user) === null || _b === void 0 ? void 0 : _b._id) !== undefined && req.user._id !== null) {
             const updateUser = yield testUsersModel_1.default.findByIdAndUpdate(req.user._id, data, {
                 returnDocument: "after",
                 runValidators: true

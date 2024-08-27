@@ -19,7 +19,7 @@ const handler_1 = require("../service/handler");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const testUsersModel_1 = __importDefault(require("../models/testUsersModel"));
 // 檢查 token 是否存在
-exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.checkAuth = (0, handleErrorAsync_1.default)((req, _res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     const JWT_SECRET = process.env.JWT_SECRET;
     let token;
@@ -44,6 +44,7 @@ exports.checkAuth = (0, handleErrorAsync_1.default)((req, res, next) => __awaite
         }
         req.user = {
             _id: currentUser._id.toString(),
+            onlineStatus: currentUser.onlineStatus,
             name: currentUser.name,
             gender: (_a = currentUser.gender) !== null && _a !== void 0 ? _a : "secret",
             photo: (_b = currentUser.photo) !== null && _b !== void 0 ? _b : "",
@@ -66,6 +67,7 @@ const generateSendJWT = (res_1, message_1, user_1, ...args_1) => __awaiter(void 
         token,
         profile: {
             _id: user._id,
+            onlineStatus: user.onlineStatus,
             name: user.name,
             gender: user.gender,
             photo: user.photo

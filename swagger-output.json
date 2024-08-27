@@ -31,16 +31,6 @@
         }
       }
     },
-    "/chat": {
-      "get": {
-        "description": "",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/test/v1/user/register": {
       "post": {
         "tags": [
@@ -485,6 +475,61 @@
           }
         }
       }
+    },
+    "/api/v1/friendList/add/{friendId}": {
+      "post": {
+        "tags": [
+          "friend list"
+        ],
+        "description": "新增好友",
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/friendList/remove/{friendId}": {
+      "delete": {
+        "tags": [
+          "friend list"
+        ],
+        "description": "刪除好友",
+        "parameters": [
+          {
+            "name": "friendId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/v1/friendList/": {
+      "get": {
+        "tags": [
+          "friend list"
+        ],
+        "description": "取得好友列表",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -498,7 +543,7 @@
         "properties": {
           "type": "object",
           "properties": {
-            "onlineStatus": {
+            "googleId": {
               "type": "object",
               "properties": {
                 "type": {
@@ -507,7 +552,7 @@
                 }
               }
             },
-            "messageBoard": {
+            "lineUserId": {
               "type": "object",
               "properties": {
                 "type": {
@@ -561,30 +606,39 @@
                 }
               }
             },
+            "onlineStatus": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "messageBoard": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "friendList": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "objectid"
+                }
+              }
+            },
             "createdAt": {
               "type": "object",
               "properties": {
                 "type": {
                   "type": "string",
                   "example": "date"
-                }
-              }
-            },
-            "googleId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
-                }
-              }
-            },
-            "lineUserId": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "string"
                 }
               }
             },
