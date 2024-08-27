@@ -33,5 +33,33 @@ router.get(
     }
   })
 )
+router.post("/lineLogin",
+  /**
+     * #swagger.tags = ['line']
+     * #swagger.description = 'line 登入'
+     * #swagger.parameters['body'] = {
+            in: 'body',
+            type: 'object',
+            required: true,
+            description: '資料格式',
+            schema: {
+                $lineUserId: 'fnuwe242352on52j3n',
+                $lineDisplayName: 'test',
+                $linePictureUrl: '11111111',
+                $statusMessage: 'test'
+            }
+        }
+     * #swagger.responses[200] = {
+            description: '登入資訊',
+            schema: {
+                "status": "success",
+                "message": "登入成功",
+                "data": {
+                    }
+                }
+            }
+        }
+     */
+  authController.line.login)
 
 export default router

@@ -47,7 +47,8 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now
     },
-    googleId: String
+    googleId: String,
+    lineUserId: String
   },
   {
     versionKey: false
