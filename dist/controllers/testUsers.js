@@ -97,8 +97,8 @@ const users = {
     })),
     patchProfile: (0, handleErrorAsync_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         var _b;
-        const { onlineStatus, name, gender } = req.body;
-        const data = { onlineStatus, name, gender };
+        const { onlineStatus, name, gender, messageBoard } = req.body;
+        const data = { onlineStatus, name, gender, messageBoard };
         if (name === "") {
             (0, appError_1.default)("名稱必填", 400, next);
             return;

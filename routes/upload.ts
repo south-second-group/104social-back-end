@@ -10,6 +10,7 @@ import firebaseAdmin from "../service/firebase"
 import image from "../service/image"
 import User from "../models/testUsersModel"
 import { checkAuth } from "../service/auth"
+import { successHandler } from "../service/handler"
 
 const router = express.Router()
 const bucket = firebaseAdmin.storage().bucket()
@@ -59,10 +60,7 @@ router.post("/profilePhoto", checkAuth, image, handleErrorAsync(async (req, res,
               runValidators: true
             }).then(updateUser => {
               if (updateUser !== null && updateUser !== undefined) {
-                res.json({
-                  status: "用戶頭像已更新",
-                  src: fileUrl
-                })
+                successHandler(res, "更新用戶照片成功", { src: fileUrl })
               }
             }).catch(() => {
               res.status(500).send("更新用戶照片失敗")

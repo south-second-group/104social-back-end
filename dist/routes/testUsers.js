@@ -102,7 +102,7 @@ router.get("/profile", auth_1.checkAuth,
    */
 testUsers_1.default.getOwnProfile);
 // 編輯自己的資訊
-router.patch("/profile", auth_1.checkAuth, 
+router.put("/profile", auth_1.checkAuth, 
 /**
    * #swagger.tags = ['test Users']
    * #swagger.description = '編輯自己的資訊'

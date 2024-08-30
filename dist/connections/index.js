@@ -12,6 +12,3 @@ mongoose_1.default
     .connect(DB + "testDB", {})
     .then(() => { console.warn("連線資料庫成功"); })
     .catch((error) => { console.error("連線資料庫失敗:", error); });
-// useCreateIndex: true,
-// useFindAndModify: false,
-// useUnifiedTopology: true,

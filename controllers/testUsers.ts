@@ -107,8 +107,8 @@ const users = {
     }
   ),
   patchProfile: handleErrorAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const { onlineStatus, name, gender } = req.body
-    const data = { onlineStatus, name, gender }
+    const { onlineStatus, name, gender, messageBoard } = req.body
+    const data = { onlineStatus, name, gender, messageBoard }
 
     if (name === "") {
       appError("名稱必填", 400, next); return

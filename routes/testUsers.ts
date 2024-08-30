@@ -110,7 +110,7 @@ router.get(
 )
 
 // 編輯自己的資訊
-router.patch("/profile", checkAuth,
+router.put("/profile", checkAuth,
   /**
      * #swagger.tags = ['test Users']
      * #swagger.description = '編輯自己的資訊'

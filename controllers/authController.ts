@@ -5,7 +5,9 @@ import bcrypt from "bcryptjs"
 import handleErrorAsync from "../service/handleErrorAsync"
 import appError from "../service/appError"
 import User from "../models/testUsersModel"
-import { successHandler } from "../service/handler"
+// import { successHandler } from "../service/handler"
+import { generateSendJWT } from "../service/auth"
+import { type UserInterface } from "../types/user"
 
 export const authController = {
   google: {
@@ -52,7 +54,7 @@ export const authController = {
 
           user = await User.findOne({ lineUserId }).select("-password")
 
-          successHandler(res, "登入成功", user)
+          await generateSendJWT(res, "登入成功", user.toObject() as UserInterface)
         } catch (err) {
           console.error(err)
           appError("line 登入失敗，請重新登入", 401, next)
