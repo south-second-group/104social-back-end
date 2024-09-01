@@ -235,7 +235,7 @@
                     }
                 ]
             },
-            "patch": {
+            "put": {
                 "tags": [
                     "test Users"
                 ],
@@ -327,9 +327,6 @@
             "post": {
                 "description": "",
                 "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
                     "500": {
                         "description": "Internal Server Error"
                     }
@@ -476,7 +473,7 @@
                 }
             }
         },
-        "/api/v1/friendList/add/{friendId}": {
+        "/api/v1/friendList/{friendId}": {
             "post": {
                 "tags": [
                     "friend list"

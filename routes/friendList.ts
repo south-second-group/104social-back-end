@@ -4,7 +4,7 @@ import { checkAuth } from "../service/auth"
 
 const router = express.Router()
 
-router.post("/add/:friendId",
+router.post("/:friendId",
   checkAuth,
   /**
      * #swagger.tags = ['friend list']

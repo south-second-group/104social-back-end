@@ -17,6 +17,16 @@ const friendListController = {
         return
       }
 
+      if (!mongoose.Types.ObjectId.isValid(friendId)) {
+        appError("請確認好友 ID 是否正確", 400, next)
+        return
+      }
+
+      if (userId === friendId) {
+        appError("無法加自己為好友", 400, next)
+        return
+      }
+
       const userObjectId = new mongoose.Types.ObjectId(userId.toString()) // 確保 userId 是有效的 ObjectId
       let friendList = await FriendList.findOne({ user: userObjectId })
 
@@ -69,21 +79,20 @@ const friendListController = {
 
   getFriendList: handleErrorAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userObjectId = req.user?._id
+      const userId = req.user?._id
 
-      if (!userObjectId) {
-        appError("缺少必要參數", 400, next)
+      if (!userId) {
+        appError("缺少 userId", 400, next)
         return
       }
 
-      const friendList = await FriendList.findOne({ user: userObjectId }).populate(
+      let friendList = await FriendList.findOne({ user: userId }).populate(
         "friends",
-        "name photo"
+        "name photo onlineStatus messageBoard "
       )
 
       if (!friendList) {
-        appError("找不到好友列表", 404, next)
-        return
+        friendList = await FriendList.create({ user: userId, friends: [] })
       }
 
       successHandler(res, "成功獲取好友列表", friendList)

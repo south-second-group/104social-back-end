@@ -37,7 +37,7 @@ router.post("/profilePhoto", checkAuth, image, handleErrorAsync(async (req, res,
     }
 
     // 基於檔案的原始名稱建立一個 blob 物件
-    const blob = bucket.file(`images/${uuidv4()}.${file.originalname.split(".").pop()}`)
+    const blob = bucket.file(`images/yahoo/avatars/${uuidv4()}.${file.originalname.split(".").pop()}`)
     // 建立一個可以寫入 blob 的物件
     const blobStream = blob.createWriteStream()
 

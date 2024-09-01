@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
     },
     photo: {
       type: String,
-      default: "https://firebasestorage.googleapis.com/v0/b/social-back-end.appspot.com/o/images%2FdefaultAvatar.webp?alt=media&token=4c860c6c-2279-4f2f-ae6e-65bd0f9dd34a"
+      default: "https://firebasestorage.googleapis.com/v0/b/social-back-end.appspot.com/o/images%2Fyahoo%2Favatars%2FdefaultAvatar.webp?alt=media&token=578478f0-fd5d-4790-aa9b-a60e87a304c6"
     },
     gender: {
       type: String,
@@ -43,7 +43,7 @@ const userSchema = new mongoose.Schema(
     },
     messageBoard: {
       type: String,
-      default: "留下心情或分享連結..."
+      default: ""
     },
     friendList: {
       type: mongoose.Schema.Types.ObjectId,
