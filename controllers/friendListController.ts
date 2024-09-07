@@ -31,8 +31,13 @@ const friendListController = {
       let friendList = await FriendList.findOne({ user: userObjectId })
 
       if (!friendList) {
-        friendList = await FriendList.create({ user: userObjectId, friends: [] })
-        await User.findByIdAndUpdate(userObjectId, { friendList: friendList._id })
+        friendList = await FriendList.create({
+          user: userObjectId,
+          friends: []
+        })
+        await User.findByIdAndUpdate(userObjectId, {
+          friendList: friendList._id
+        })
       }
 
       // eslint-disable-next-line
@@ -69,8 +74,10 @@ const friendListController = {
         return
       }
 
-      // eslint-disable-next-line
-      friendList.friends = friendList.friends.filter(id => id.toString() !== friendId)
+      friendList.friends = friendList.friends.filter(
+        // eslint-disable-next-line
+        id => id.toString() !== friendId
+      )
       await friendList.save()
 
       successHandler(res, "成功移除朋友", friendList)

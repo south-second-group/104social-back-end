@@ -13,20 +13,27 @@ interface Message {
   context: string
 }
 
-// interface ChatType {
-//   content: string
-//   from: {
-//     _id: mongoose.Types.ObjectId
-//     name: string
-//     photo: string
-//   }
-//   to: {
-//     _id: mongoose.Types.ObjectId
-//     name: string
-//     photo: string
-//   }
-//   createdAt: Date
-// };
+// id: chat._id,
+// context: "message",
+// content: chat.content,
+// uuid: chat?.from?._id,
+// name: chat.from?.name,
+// photo: chat.from?.photo,
+// createdAt: chat.createdAt,
+// toId: chat?.to?._id
+interface ChatType {
+  _id: object
+  from: {
+    _id: object
+    name?: string
+    photo?: string
+  }
+  to: {
+    _id: object
+  }
+  content: string
+  createdAt: Date
+}
 
 /**
 *
@@ -55,23 +62,21 @@ const Chat = mongoose.model(
 )
 
 const wss1 = new WebSocket.WebSocketServer({ noServer: true })
+// 取得用戶資料
+let uuid = ""
+let name = ""
+let photo = ""
 
 /**
 *
 *   連線設定
 *
 */
-// eslint-disable-next-line
 wss1.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
-  console.warn("後端 WS，連線成功 ...")
+  console.warn("後端 WS，連線成功 (傳送歷史資料)")
 
-  // 取得用戶資料
-  // const uuid = uuidv4()
-  let uuid = ""
-  let name = ""
-  let photo = ""
-
+  // 取得用戶令牌，解析用戶資料
   async function getToken (): Promise<void> {
     try {
       const url = typeof req.url === "string" && req.url.trim() !== "" ? new URL(req.url, `http://${req.headers.host}`) : null
@@ -91,12 +96,19 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
         } else {
           console.error("Invalid token payload")
         }
+      } else {
+        console.error("Token is null")
       }
     } catch (error) {
       console.error("Failed to get token:", error)
     }
   }
   await getToken()
+
+  if (!uuid) {
+    console.error("UUID is empty")
+    return
+  }
 
   // 判斷是哪一個用戶使用
   const wsWithUUID = ws as WebSocketWithUUID
@@ -108,7 +120,7 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
     uuid,
     name
   }
-  // 發訊息給用戶 只能發送字串
+  // 發訊息給用戶 (只能發送字串)
   ws.send(JSON.stringify(user))
 
   // 發送資料庫中歷史訊息
@@ -126,22 +138,26 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
   })
 
   const chats = await Chat.find({ $or: [{ from: uuid }, { to: uuid }] }).populate({ path: "from", select: "name photo" }).populate({ path: "to", select: "name photo" })
-  // eslint-disable-next-line
-  chats.forEach((chat: any) => {
+  chats.forEach((chat: ChatType) => {
     const chatMessage = {
+      id: chat._id,
       context: "message",
       content: chat.content,
-      uuid: chat.from._id,
-      name: chat.from.name,
-      photo: chat.from.photo,
-      createdAt: chat.createdAt
+      uuid: chat?.from?._id,
+      name: chat.from?.name,
+      photo: chat.from?.photo,
+      createdAt: chat.createdAt,
+      toId: chat?.to?._id
     }
     ws.send(JSON.stringify(chatMessage))
   })
+})
 
-  // 監聽前端各種傳訊行為
-  // eslint-disable-next-line
-  ws.on("message", async (message: string): Promise<void> => {
+// 監聽前端各種傳訊行為
+wss1.on("connection", async function connection (ws, _req) {
+  console.warn("後端 WS，連線成功 (傳送即時訊息或邀請)")
+
+  ws.on("message", async (message: string) => {
     const msg = JSON.parse(message)
 
     // 邀請行為
@@ -172,17 +188,18 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
     // 訊息行為
     if (msg.context === "message") {
       const newMessage = {
+        id: new mongoose.Types.ObjectId(),
         context: "message",
         content: msg.content,
         uuid,
         name,
         photo,
+        toId: msg.to,
         createdAt: new Date()
       }
 
-      // 不處理直接回傳
-      // ws.send(JSON.stringify(newMessage))
-      // sendAllUser(newMessage)
+      // ws.send(JSON.stringify(newMessage)) // 不處理直接回傳
+      // sendAllUser(newMessage) // 廣播給所有人
       sendToUser(String(msg.to), newMessage, String(msg.from))
 
       // 儲存聊天訊息
