@@ -3,8 +3,6 @@ import WebSocket from "ws"
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken"
 
-// import User from "../models/testUsersModel"
-
 interface WebSocketWithUUID extends WebSocket {
   uuid: string
 }
@@ -13,14 +11,6 @@ interface Message {
   context: string
 }
 
-// id: chat._id,
-// context: "message",
-// content: chat.content,
-// uuid: chat?.from?._id,
-// name: chat.from?.name,
-// photo: chat.from?.photo,
-// createdAt: chat.createdAt,
-// toId: chat?.to?._id
 interface ChatType {
   _id: object
   from: {
@@ -32,13 +22,12 @@ interface ChatType {
     _id: object
   }
   content: string
+  isRead: boolean
   createdAt: Date
 }
 
 /**
-*
-*   模組設定
-*
+*   資料庫模組設定
 */
 const Invite = mongoose.model(
   "Invite",
@@ -57,24 +46,32 @@ const Chat = mongoose.model(
     from: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     to: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     content: { type: String, required: true },
+    isRead: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now }
   })
 )
 
-const wss1 = new WebSocket.WebSocketServer({ noServer: true })
+const wss = new WebSocket.WebSocketServer({ noServer: true })
 // 取得用戶資料
 let uuid = ""
 let name = ""
 let photo = ""
+//  用於判斷是否為第一次連線
+let isFirstConnection = true
 
 /**
-*
 *   連線設定
-*
 */
-wss1.on("connection", async function connection (ws, req): Promise<void> {
+wss.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
   console.warn("後端 WS，連線成功 (傳送歷史資料)")
+
+  // if (!isFirstConnection) {
+  //   console.warn("已經處理過第一次連線(停止傳送歷史資料)")
+  //   return
+  // }
+
+  // isFirstConnection = false
 
   // 取得用戶令牌，解析用戶資料
   async function getToken (): Promise<void> {
@@ -141,20 +138,21 @@ wss1.on("connection", async function connection (ws, req): Promise<void> {
   chats.forEach((chat: ChatType) => {
     const chatMessage = {
       id: chat._id,
-      context: "message",
+      context: "oldMessage",
       content: chat.content,
       uuid: chat?.from?._id,
       name: chat.from?.name,
       photo: chat.from?.photo,
       createdAt: chat.createdAt,
-      toId: chat?.to?._id
+      toId: chat?.to?._id,
+      isRead: chat.isRead
     }
     ws.send(JSON.stringify(chatMessage))
   })
 })
 
-// 監聽前端各種傳訊行為
-wss1.on("connection", async function connection (ws, _req) {
+// 監聽 "前端" 各種傳訊行為
+wss.on("connection", async function connection (ws, _req) {
   console.warn("後端 WS，連線成功 (傳送即時訊息或邀請)")
 
   ws.on("message", async (message: string) => {
@@ -195,6 +193,7 @@ wss1.on("connection", async function connection (ws, _req) {
         name,
         photo,
         toId: msg.to,
+        isRead: false,
         createdAt: new Date()
       }
 
@@ -206,19 +205,32 @@ wss1.on("connection", async function connection (ws, _req) {
       const chat = new Chat({ from: uuid, to: msg.to, content: msg.content })
       await chat.save()
     }
+
+    // 已讀行為
+    if (msg.context === "read") {
+      // 設定已讀
+      (wss.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
+        if (client.readyState === WebSocket.OPEN && (client.uuid === msg.to || client.uuid === msg.from)) {
+          msg.isRead = true
+        }
+      })
+
+      await Chat.updateMany(
+        { to: msg.to, from: msg.from },
+        { $set: { isRead: true } }
+      )
+    }
   })
 })
 
 /**
-*
 *   相關函式
-*
 */
 
 // 推播"大家" 暫無使用
 // eslint-disable-next-line
 function sendAllUser (msg: Message): void {
-  wss1.clients.forEach(function (client: WebSocket) {
+  wss.clients.forEach(function (client: WebSocket) {
     // 已建立連線：並且排除自身 && client.uuid !== msg.uuid  > 不排除自己，因需要顯示自己的訊息
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(msg))
@@ -228,7 +240,9 @@ function sendAllUser (msg: Message): void {
 
 // 推播"特定用戶"
 function sendToUser (uuid: string, msg: Message, from: string): void {
-  (wss1.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
+  (wss.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
+    // console.info(client.uuid, uuid, from)
+
     // 已建立連線：並且是指定的用戶
     if (client.readyState === WebSocket.OPEN && (client.uuid === uuid || client.uuid === from)) {
       client.send(JSON.stringify(msg))
@@ -236,4 +250,4 @@ function sendToUser (uuid: string, msg: Message, from: string): void {
   })
 }
 
-export default wss1
+export default wss

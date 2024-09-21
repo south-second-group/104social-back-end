@@ -7,7 +7,7 @@
 import app from "../app"
 import debugModule from "debug"
 import http from "http"
-import wss1 from "../service/ws"
+import wss from "../service/ws"
 import { type WebSocket as WSWebSocket } from "ws"
 import { URL } from "url"
 const debug = debugModule("104social:server")
@@ -29,8 +29,8 @@ server.on("upgrade", function upgrade (request, socket, head) {
   const { pathname = "" } = new URL(request.url ?? "", "http://localhost")
 
   if (pathname === "/ws") {
-    wss1.handleUpgrade(request, socket, head, function done (ws: WSWebSocket) {
-      wss1.emit("connection", ws, request)
+    wss.handleUpgrade(request, socket, head, function done (ws: WSWebSocket) {
+      wss.emit("connection", ws, request)
     })
   } else {
     socket.destroy()
