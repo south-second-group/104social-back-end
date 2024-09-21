@@ -56,8 +56,6 @@ const wss = new WebSocket.WebSocketServer({ noServer: true })
 let uuid = ""
 let name = ""
 let photo = ""
-//  用於判斷是否為第一次連線
-let isFirstConnection = true
 
 /**
 *   連線設定
@@ -65,13 +63,6 @@ let isFirstConnection = true
 wss.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
   console.warn("後端 WS，連線成功 (傳送歷史資料)")
-
-  // if (!isFirstConnection) {
-  //   console.warn("已經處理過第一次連線(停止傳送歷史資料)")
-  //   return
-  // }
-
-  // isFirstConnection = false
 
   // 取得用戶令牌，解析用戶資料
   async function getToken (): Promise<void> {
