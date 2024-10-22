@@ -16,8 +16,8 @@
   },
   "editor.formatOnSave": true,
   "editor.inlineSuggest.enabled": true,
-  // "editor.cursorStyle": "block",
-  // "editor.cursorBlinking": "expand",
+  "editor.cursorStyle": "line",
+  "editor.cursorBlinking": "smooth",
   "editor.inlineSuggest.showToolbar": "always",
   "editor.tokenColorCustomizations": {
       "textMateRules": [
@@ -195,7 +195,7 @@
   "material-icon-theme.activeIconPack": "vue",
   "material-icon-theme.folders.associations": {},
   "material-icon-theme.files.associations": {},
-  "editor.fontSize": 14,
+  "editor.fontSize": 16,
   "editor.fontVariations": false,
   "projectManager.tags": [],
   "github.copilot.editor.enableAutoCompletions": true,
