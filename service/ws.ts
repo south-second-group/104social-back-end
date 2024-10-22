@@ -2,6 +2,7 @@
 import WebSocket from "ws"
 import mongoose from "mongoose"
 import jwt from "jsonwebtoken"
+import User from "../models/testUsersModel"
 
 interface WebSocketWithUUID extends WebSocket {
   uuid: string
@@ -33,8 +34,8 @@ const Invite = mongoose.model(
   "Invite",
   new mongoose.Schema({
     from: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    to: { type: mongoose.Schema.Types.ObjectId, required: true },
-    status: { type: String, enum: ["sent", "accepted", "rejected"], default: "sent" },
+    to: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    status: { type: String, enum: ["sendInvite", "accepted", "rejected"], default: "sendInvite" },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now }
   })
@@ -56,12 +57,16 @@ const wss = new WebSocket.WebSocketServer({ noServer: true })
 let uuid = ""
 let name = ""
 let photo = ""
+//  用於判斷是否為第一次連線
+// let isFirstConnection = true
 
 /**
 *   連線設定
 */
 wss.on("connection", async function connection (ws, req): Promise<void> {
   ws.on("error", console.error)
+
+  // if (isFirstConnection) {
   console.warn("後端 WS，連線成功 (傳送歷史資料)")
 
   // 取得用戶令牌，解析用戶資料
@@ -112,12 +117,15 @@ wss.on("connection", async function connection (ws, req): Promise<void> {
   ws.send(JSON.stringify(user))
 
   // 發送資料庫中歷史訊息
-  const invites = await Invite.find({ to: uuid }).populate({ path: "from", select: "name photo" })
+  const invites = await Invite.find({ $or: [{ from: uuid }, { to: uuid }] }).populate({ path: "from", select: "name photo" }).populate({ path: "to", select: "name photo" })
   // eslint-disable-next-line
-  invites.forEach((invite: any) => {
+    invites.forEach((invite: any) => {
     const inviteMessage = {
+      id: invite._id,
       context: "invite",
       from: invite.from._id,
+      to: invite.to,
+      status: invite.status,
       name: invite.from.name,
       photo: invite.from.photo,
       createdAt: invite.createdAt
@@ -140,34 +148,59 @@ wss.on("connection", async function connection (ws, req): Promise<void> {
     }
     ws.send(JSON.stringify(chatMessage))
   })
+
+  // isFirstConnection = false
+  // }
 })
 
-// 監聽 "前端" 各種傳訊行為
+/**
+* 監聽 "前端" 各種傳訊行為
+*/
 wss.on("connection", async function connection (ws, _req) {
-  console.warn("後端 WS，連線成功 (傳送即時訊息或邀請)")
-
   ws.on("message", async (message: string) => {
+    // 前端傳過來的整包物件
     const msg = JSON.parse(message)
 
     // 邀請行為
     if (msg.context === "invite") {
+      if (msg.to === uuid) {
+        console.error("邀請失敗，不能邀請自己")
+        // return
+      }
+
+      const toUser = await User.findById(msg.to)
+
       const inviteMessage = {
+        id: new mongoose.Types.ObjectId(),
         context: "invite",
         from: uuid,
-        to: msg.to,
+        to: toUser,
+        status: msg.status,
         name,
         photo,
         createdAt: new Date()
       }
+
       // 發送邀請給指定的用戶(不能隨意id，前端會判斷是否與本身相符)
       sendToUser(String(msg.to), inviteMessage, String(msg.from))
 
       // 嘗試查找邀請
       let invite = await Invite.findOne({ from: uuid, to: msg.to })
       if (invite === null) {
-        invite = new Invite({ from: uuid, to: msg.to, status: "sent", createdAt: new Date() })
-        await invite.save()
-        return
+        if (msg.status === "sendInvite") {
+          invite = new Invite({ from: uuid, to: msg.to, status: "sendInvite", createdAt: new Date() })
+          await invite.save()
+          return
+        }
+
+        if (msg.status === "rejected") {
+          invite = new Invite({ from: uuid, to: msg.to, status: "rejected", createdAt: new Date() })
+        }
+
+        if (msg.status === "accepted") {
+          // invite = new Invite({ from: uuid, to: msg.to, status: "accepted", createdAt: new Date() })
+          invite = await Invite.findOneAndUpdate({ from: uuid, to: msg.to }, { status: "accepted", updatedAt: new Date() })
+        }
       } else {
         await Invite.deleteOne({ _id: invite._id })
         return
@@ -176,6 +209,8 @@ wss.on("connection", async function connection (ws, _req) {
 
     // 訊息行為
     if (msg.context === "message") {
+      console.warn("後端 WS，連線成功 (傳送即時訊息或邀請)")
+
       const newMessage = {
         id: new mongoose.Types.ObjectId(),
         context: "message",
@@ -188,8 +223,6 @@ wss.on("connection", async function connection (ws, _req) {
         createdAt: new Date()
       }
 
-      // ws.send(JSON.stringify(newMessage)) // 不處理直接回傳
-      // sendAllUser(newMessage) // 廣播給所有人
       sendToUser(String(msg.to), newMessage, String(msg.from))
 
       // 儲存聊天訊息
@@ -232,8 +265,6 @@ function sendAllUser (msg: Message): void {
 // 推播"特定用戶"
 function sendToUser (uuid: string, msg: Message, from: string): void {
   (wss.clients as Set<WebSocketWithUUID>).forEach(function (client: WebSocketWithUUID) {
-    // console.info(client.uuid, uuid, from)
-
     // 已建立連線：並且是指定的用戶
     if (client.readyState === WebSocket.OPEN && (client.uuid === uuid || client.uuid === from)) {
       client.send(JSON.stringify(msg))
