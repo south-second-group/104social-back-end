@@ -56,7 +56,7 @@ router.post("/createOrder", checkAuth, async (req, res, _next): Promise<void> =>
   const { _id } = req.user ?? {}
   // console.warn(_id) // 使用者資訊
 
-  // 使用 Unix Timestamp 作為訂單編號（金流也需要加入時間戳記）
+  // 使用 UNIX Timestamp 作為訂單編號（金流也需要加入時間戳記）
   const TimeStamp = Math.round(new Date().getTime() / 1000)
 
   const order = {

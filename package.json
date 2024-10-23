@@ -8,7 +8,7 @@
     "swagger": "tsx ./swagger.ts",
     "preview": "tsx dist/bin/www.js",
     "lint": "eslint **/*.ts app.ts",
-    "format": "eslint **/*.ts app.ts --fix",
+    "format": "eslint **/*.ts app.ts --fix && npx case-police --fix",
     "tsc": "npx tsc --watch",
     "format:watch": "nodemon --exec 'npm run format' --watch ."
   },
